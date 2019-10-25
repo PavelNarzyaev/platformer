@@ -9,6 +9,8 @@ export default class Player extends Container {
 
 	public movingLeft:boolean = false;
 	public movingRight:boolean = false;
+	public speedY:number = 0;
+	public canJump:boolean = true;
 
 	private _skin:Sprite;
 	private _direction:string = Player.RIGHT_DIRECTION;

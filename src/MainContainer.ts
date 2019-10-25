@@ -8,6 +8,7 @@ export default class MainContainer extends View {
 	private static readonly DOWN:string = "ArrowDown";
 	private static readonly LEFT:string = "ArrowLeft";
 	private static readonly RIGHT:string = "ArrowRight";
+	private static readonly GRAVITY:number = 0.1;
 
 	private _pressedUp:boolean = false;
 	private _pressedDown:boolean = false;
@@ -79,6 +80,21 @@ export default class MainContainer extends View {
 				} else {
 					this._player.x = minX;
 				}
+			}
+
+			if (this._pressedUp && this._player.canJump) {
+				this._player.canJump = false;
+				this._player.speedY = -5;
+			}
+
+			const maxY:number = this.h - this._player.height;
+			if (this._player.y + this._player.speedY < maxY) {
+				this._player.y += this._player.speedY;
+				this._player.speedY += MainContainer.GRAVITY;
+			} else {
+				this._player.y = maxY;
+				this._player.speedY = 0;
+				this._player.canJump = true;
 			}
 		});
 	}
