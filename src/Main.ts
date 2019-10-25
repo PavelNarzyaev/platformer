@@ -15,6 +15,7 @@ export class Main {
 		this._windowSize = new Rectangle();
 		this._mainContainer = new MainContainer();
 		this._mainContainer.setSize(1000, 1000);
+		this._mainContainer.init();
 		Globals.pixiApp.stage.addChild(this._mainContainer);
 		addEvent(window, "resize", () => { this.windowResizeHandler(); });
 		this.refreshSize();
