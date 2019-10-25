@@ -2,18 +2,19 @@ import Container = PIXI.Container;
 import Sprite = PIXI.Sprite;
 
 export default class Player extends Container {
-	private static readonly LEFT_DIRECTION:string = "leftDirection";
-	private static readonly RIGHT_DIRECTION:string = "rightDirection";
-
 	public static readonly SKIN_NAME:string = "img/player.png";
+	public static readonly GRAVITY:number = 0.15;
+	public static readonly JUMP_SPEED:number = -10;
+	public static readonly MOVING_SPEED:number = 4;
+	public static readonly LEFT:symbol = Symbol();
+	public static readonly RIGHT:symbol = Symbol();
 
-	public movingLeft:boolean = false;
-	public movingRight:boolean = false;
 	public speedY:number = 0;
 	public canJump:boolean = true;
 
 	private _skin:Sprite;
-	private _direction:string = Player.RIGHT_DIRECTION;
+	private _movingDirection:symbol = null;
+	private _skinDirection:symbol = Player.RIGHT;
 
 	constructor() {
 		super();
@@ -26,31 +27,37 @@ export default class Player extends Container {
 	}
 
 	public moveLeft():void {
-		this.movingLeft = true;
-		this.movingRight = false;
-		this.setDirection(Player.LEFT_DIRECTION);
+		this._movingDirection = Player.LEFT;
+		this.refreshSkinDirection();
 	}
 
 	public moveRight():void {
-		this.movingRight = true;
-		this.movingLeft = false;
-		this.setDirection(Player.RIGHT_DIRECTION);
+		this._movingDirection = Player.RIGHT;
+		this.refreshSkinDirection();
 	}
 
-	private setDirection(value:string):void {
-		if (this._direction !== value) {
-			this._direction = value;
-			switch (this._direction) {
-				case Player.LEFT_DIRECTION:
+	public stop():void {
+		this._movingDirection = null;
+	}
+
+	private refreshSkinDirection():void {
+		if (this._skinDirection !== this._movingDirection) {
+			this._skinDirection = this._movingDirection;
+			switch (this._skinDirection) {
+				case Player.LEFT:
 					this._skin.scale.x = -1;
 					this._skin.x = this._skin.width;
 					break;
 
-				case Player.RIGHT_DIRECTION:
+				case Player.RIGHT:
 					this._skin.scale.x = 1;
 					this._skin.x = 0;
 					break;
 			}
 		}
+	}
+
+	public getMovingDirection():symbol {
+		return this._movingDirection;
 	}
 }
