@@ -66,9 +66,19 @@ export default class MainContainer extends View {
 		Globals.pixiApp.ticker.add(() => {
 			const speed:number = 3;
 			if (this._player.movingRight) {
-				this._player.x += speed;
+				const maxX:number = this.w - this._player.width;
+				if (this._player.x + speed < maxX) {
+					this._player.x += speed;
+				} else {
+					this._player.x = maxX;
+				}
 			} else if (this._player.movingLeft) {
-				this._player.x -= speed;
+				const minX:number = 0;
+				if (this._player.x - speed > minX) {
+					this._player.x -= speed;
+				} else {
+					this._player.x = minX;
+				}
 			}
 		});
 	}
