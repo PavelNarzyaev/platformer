@@ -40,6 +40,7 @@ export default class MainContainer extends View {
 
 	private initPlayer():void {
 		this._player = new Player();
+		this._player.y = this.h - this._player.height;
 		this.addChild(this._player);
 	}
 
