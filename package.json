@@ -1,0 +1,41 @@
+{
+	"name": "Platformer",
+	"description": "Platformer engine",
+	"version": "0.0.1",
+	"author": "Pavel Narzyaev",
+	"main": "index.js",
+	"scripts": {
+		"local-test": "webpack --watch --config webpack.config.js",
+		"local-release": "webpack --watch --config webpack.config.js --env.release",
+		"server-test": "webpack --watch --config webpack.config.js --env.server",
+		"server-release": "webpack --watch --config webpack.config.js --env.server --env.release"
+	},
+	"devDependencies": {
+		"@types/node": "^10.1.4",
+		"@types/pixi.js": "^4.8.0",
+		"babel-core": "^6.26.3",
+		"babel-loader": "^7.1.4",
+		"babel-preset-env": "^1.7.0",
+		"babel-preset-es2015": "^6.24.1",
+		"babel-preset-es2016": "^6.24.1",
+		"browser-sync": "^2.24.5",
+		"browser-sync-webpack-plugin": "^2.2.2",
+		"clean-webpack-plugin": "^0.1.19",
+		"copy-webpack-plugin": "^4.5.2",
+		"html-webpack-plugin": "^3.2.0",
+		"mobx": "^4.3.0",
+		"open-browser-webpack-plugin": "0.0.5",
+		"ts-loader": "^4.4.2",
+		"ts-node": "^7.0.0",
+		"tslint": "^5.10.0",
+		"tslint-loader": "^3.6.0",
+		"typescript": "^2.9.2",
+		"webpack-cli": "^3.0.8"
+	},
+	"dependencies": {
+		"babel-polyfill": "^6.26.0",
+		"circular-dependency-plugin": "^5.0.2",
+		"pixi.js": "^5.0.4",
+		"webpack": "^4.25.1"
+	}
+}

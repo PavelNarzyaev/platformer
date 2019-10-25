@@ -1,0 +1,27 @@
+* {
+	padding: 0;
+	margin: 0;
+}
+
+body {
+	background: #ffffff;
+	margin: 0 auto;
+	overflow: hidden;
+
+	width: 100vw;
+	height: 100vh;
+	box-sizing: border-box;
+	display: flex;
+
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+#gameCanvas{
+	background: #ffffff;
+	z-index: 10;
+	margin: 0 auto;
+	display: block;
+}
