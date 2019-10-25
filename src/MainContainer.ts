@@ -1,5 +1,5 @@
 import {View} from "./View";
-import {addEvent} from "./Globals";
+import {addEvent, default as Globals} from "./Globals";
 import Loader = PIXI.loaders.Loader;
 import Player from "./Player";
 
@@ -35,6 +35,7 @@ export default class MainContainer extends View {
 	private completeLoadingHandler():void {
 		this.initPlayer();
 		this.addKeyListeners();
+		this.launchTicker();
 	}
 
 	private initPlayer():void {
@@ -60,6 +61,17 @@ export default class MainContainer extends View {
 		);
 	}
 
+	private launchTicker():void {
+		Globals.pixiApp.ticker.add(() => {
+			const speed:number = 3;
+			if (this._player.movingRight) {
+				this._player.x += speed;
+			} else if (this._player.movingLeft) {
+				this._player.x -= speed;
+			}
+		});
+	}
+
 	private keyDownHandler(e:KeyboardEvent):void {
 		switch (e.code) {
 			case MainContainer.UP:
@@ -72,12 +84,12 @@ export default class MainContainer extends View {
 
 			case MainContainer.LEFT:
 				this._pressedLeft = true;
-				this._player.setDirection(Player.LEFT_DIRECTION);
+				this._player.moveLeft();
 				break;
 
 			case MainContainer.RIGHT:
 				this._pressedRight = true;
-				this._player.setDirection(Player.RIGHT_DIRECTION);
+				this._player.moveRight();
 				break;
 		}
 	}
@@ -94,10 +106,20 @@ export default class MainContainer extends View {
 
 			case MainContainer.LEFT:
 				this._pressedLeft = false;
+				if (this._pressedRight) {
+					this._player.moveRight();
+				} else {
+					this._player.movingLeft = false;
+				}
 				break;
 
 			case MainContainer.RIGHT:
 				this._pressedRight = false;
+				if (this._pressedLeft) {
+					this._player.moveLeft();
+				} else {
+					this._player.movingRight = false;
+				}
 				break;
 		}
 	}

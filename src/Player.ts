@@ -2,10 +2,14 @@ import Container = PIXI.Container;
 import Sprite = PIXI.Sprite;
 
 export default class Player extends Container {
-	public static readonly LEFT_DIRECTION:string = "leftDirection";
-	public static readonly RIGHT_DIRECTION:string = "rightDirection";
+	private static readonly LEFT_DIRECTION:string = "leftDirection";
+	private static readonly RIGHT_DIRECTION:string = "rightDirection";
 
 	public static readonly SKIN_NAME:string = "img/player.png";
+
+	public movingLeft:boolean = false;
+	public movingRight:boolean = false;
+
 	private _skin:Sprite;
 	private _direction:string = Player.RIGHT_DIRECTION;
 
@@ -19,7 +23,19 @@ export default class Player extends Container {
 		this.addChild(this._skin);
 	}
 
-	public setDirection(value:string):void {
+	public moveLeft():void {
+		this.movingLeft = true;
+		this.movingRight = false;
+		this.setDirection(Player.LEFT_DIRECTION);
+	}
+
+	public moveRight():void {
+		this.movingRight = true;
+		this.movingLeft = false;
+		this.setDirection(Player.RIGHT_DIRECTION);
+	}
+
+	private setDirection(value:string):void {
 		if (this._direction !== value) {
 			this._direction = value;
 			switch (this._direction) {
