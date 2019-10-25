@@ -1,8 +1,16 @@
 import {View} from "./View";
-import Graphics = PIXI.Graphics;
+import {addEvent} from "./Globals";
 
 export default class MainContainer extends View {
-	private _player:Graphics;
+	private static readonly UP:string = "ArrowUp";
+	private static readonly DOWN:string = "ArrowDown";
+	private static readonly LEFT:string = "ArrowLeft";
+	private static readonly RIGHT:string = "ArrowRight";
+
+	private _pressedUp:boolean = false;
+	private _pressedDown:boolean = false;
+	private _pressedLeft:boolean = false;
+	private _pressedRight:boolean = false;
 
 	constructor() {
 		super();
@@ -10,14 +18,64 @@ export default class MainContainer extends View {
 	}
 
 	public init():void {
-		this.initPlayer();
+		this.addKeyListeners();
 	}
 
-	private initPlayer():void {
-		this._player = new Graphics();
-		this._player.beginFill(0xff0000);
-		this._player.drawRect(0, 0, 30, 30);
-		this._player.endFill();
-		this.addChild(this._player);
+	private addKeyListeners():void {
+		addEvent(
+			window,
+			"keydown",
+			(e:KeyboardEvent) => {
+				this.keyDownHandler(e);
+			},
+		);
+
+		addEvent(
+			window,
+			"keyup",
+			(e:KeyboardEvent) => {
+				this.keyUpHandler(e);
+			},
+		);
+	}
+
+	private keyDownHandler(e:KeyboardEvent):void {
+		switch (e.code) {
+			case MainContainer.UP:
+				this._pressedUp = true;
+				break;
+
+			case MainContainer.DOWN:
+				this._pressedDown = true;
+				break;
+
+			case MainContainer.LEFT:
+				this._pressedLeft = true;
+				break;
+
+			case MainContainer.RIGHT:
+				this._pressedRight = true;
+				break;
+		}
+	}
+
+	private keyUpHandler(e:KeyboardEvent):void {
+		switch (e.code) {
+			case MainContainer.UP:
+				this._pressedUp = false;
+				break;
+
+			case MainContainer.DOWN:
+				this._pressedDown = false;
+				break;
+
+			case MainContainer.LEFT:
+				this._pressedLeft = false;
+				break;
+
+			case MainContainer.RIGHT:
+				this._pressedRight = false;
+				break;
+		}
 	}
 }
