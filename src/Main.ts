@@ -14,6 +14,7 @@ export class Main {
 		this.createPixiApp(canvasId);
 		this._windowSize = new Rectangle();
 		this._mainContainer = new MainContainer();
+		this._mainContainer.setSize(1000, 1000);
 		Globals.pixiApp.stage.addChild(this._mainContainer);
 		addEvent(window, "resize", () => { this.windowResizeHandler(); });
 		this.refreshSize();
@@ -62,6 +63,11 @@ export class Main {
 	}
 
 	private alignMainContainer():void {
-		this._mainContainer.setSize(this._windowSize.width, this._windowSize.height);
+		const factorW:number = this._windowSize.width / this._mainContainer.w;
+		const factorH:number = this._windowSize.height / this._mainContainer.h;
+		const scale:number = Math.min(factorW, factorH);
+		this._mainContainer.scale.x = this._mainContainer.scale.y = scale;
+		this._mainContainer.x = Math.round((this._windowSize.width - this._mainContainer.w * scale) / 2);
+		this._mainContainer.y = Math.round((this._windowSize.height - this._mainContainer.h * scale) / 2);
 	}
 }
