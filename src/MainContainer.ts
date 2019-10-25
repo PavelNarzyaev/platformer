@@ -131,6 +131,7 @@ export default class MainContainer extends View {
 					}
 					this._player.speedY = 0;
 				} else {
+					this._player.canJump = false;
 					this._player.speedY += MainContainer.GRAVITY;
 				}
 			} else {
