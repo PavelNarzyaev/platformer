@@ -10,23 +10,23 @@ export default class LevelContainer extends View {
 	private static readonly LEFT:string = "ArrowLeft";
 	private static readonly RIGHT:string = "ArrowRight";
 	private _pressedButtons:Map<string, boolean> = new Map<string, boolean>();
-	private _player:Player;
 	private _blocks:Graphics[] = [];
+	private _player:Player;
 
 	constructor() {
 		super();
 		this.showTestBackground(0xCFCFCF, .5);
 	}
 
-	public init():void {
-		this.initPlayer();
+	public init(player:Player):void {
+		this.initPlayer(player);
 		this.initBlocks();
 		this.addKeyListeners();
 		this.launchTicker();
 	}
 
-	private initPlayer():void {
-		this._player = new Player();
+	private initPlayer(player:Player):void {
+		this._player = player;
 		this._player.x = 50;
 		this._player.y = this.h - this._player.height - 100;
 		this.addChild(this._player);
