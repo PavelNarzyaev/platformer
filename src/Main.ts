@@ -1,10 +1,12 @@
 import Rectangle = PIXI.Rectangle;
 import Globals, {addEvent} from "./Globals";
 import MainContainer from "./MainContainer";
+import Graphics = PIXI.Graphics;
 
 export class Main {
 	private _windowSize:Rectangle;
 	private _mainContainer:MainContainer;
+	private _outOfBoundsCover:Graphics;
 
 	constructor(canvasId:string) {
 		this.initialize(canvasId);
@@ -13,13 +15,23 @@ export class Main {
 	private initialize(canvasId:string):void {
 		this.createPixiApp(canvasId);
 		this._windowSize = new Rectangle();
+		this.initMainContainer();
+		this.initOutOfBoundsCover();
+		addEvent(window, "resize", () => { this.windowResizeHandler(); });
+		this.refreshSize();
+		this.printWelcomeMessage();
+	}
+
+	private initMainContainer():void {
 		this._mainContainer = new MainContainer();
 		this._mainContainer.setSize(1000, 1000);
 		this._mainContainer.init();
 		Globals.pixiApp.stage.addChild(this._mainContainer);
-		addEvent(window, "resize", () => { this.windowResizeHandler(); });
-		this.refreshSize();
-		this.printWelcomeMessage();
+	}
+
+	private initOutOfBoundsCover():void {
+		this._outOfBoundsCover = new Graphics();
+		Globals.pixiApp.stage.addChild(this._outOfBoundsCover);
 	}
 
 	private createPixiApp(canvasId:string):void {
@@ -50,6 +62,7 @@ export class Main {
 		this.refreshWindowSize();
 		this.alignPixiApp();
 		this.alignMainContainer();
+		this.alignOutOfBoundsCover();
 	}
 
 	private refreshWindowSize():void {
@@ -70,5 +83,28 @@ export class Main {
 		this._mainContainer.scale.x = this._mainContainer.scale.y = scale;
 		this._mainContainer.x = Math.round((this._windowSize.width - this._mainContainer.w * scale) / 2);
 		this._mainContainer.y = Math.round((this._windowSize.height - this._mainContainer.h * scale) / 2);
+	}
+
+	private alignOutOfBoundsCover():void {
+		this._outOfBoundsCover.clear();
+		this._outOfBoundsCover.beginFill(0x000000);
+		if (this._mainContainer.h * this._mainContainer.scale.y < this._windowSize.height) {
+			const coverHeight:number = this._mainContainer.y;
+			this._outOfBoundsCover.drawRect(0, 0, this._windowSize.width, coverHeight);
+			this._outOfBoundsCover.drawRect(
+				0,
+				this._windowSize.height - coverHeight,
+				this._windowSize.width, coverHeight,
+			)
+		} else if (this._mainContainer.w * this._mainContainer.scale.x < this._windowSize.width) {
+			const coverWidth:number = this._mainContainer.x;
+			this._outOfBoundsCover.drawRect(0, 0, coverWidth, this._windowSize.height);
+			this._outOfBoundsCover.drawRect(
+				this._windowSize.width - coverWidth,
+				0,
+				coverWidth,
+				this._windowSize.height,
+			);
+		}
 	}
 }
