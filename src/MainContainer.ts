@@ -36,7 +36,7 @@ export default class MainContainer extends View {
 
 	private initLevelContainer():void {
 		this._levelContainer = new LevelContainer();
-		this._levelContainer.setSize(1500, 1000);
+		this._levelContainer.setSize(1500, 1500);
 		this._levelContainer.init(this._player);
 		this.addChild(this._levelContainer);
 	}
@@ -52,5 +52,10 @@ export default class MainContainer extends View {
 		const maxX:number = 0;
 		const calculatedX:number = ((this.w - this._player.width) / 2) - this._player.x;
 		this._levelContainer.x = Math.min(maxX, Math.max(minX, calculatedX));
+
+		const minY:number = (this._levelContainer.h - this.h) * -1;
+		const maxY:number = 0;
+		const calculatedY:number = ((this.h - this._player.height) / 2) - this._player.y;
+		this._levelContainer.y = Math.min(maxY, Math.max(minY, calculatedY));
 	}
 }
