@@ -36,7 +36,7 @@ export default class MainContainer extends View {
 
 	private initLevelContainer():void {
 		this._levelContainer = new LevelContainer();
-		this._levelContainer.setSize(1500, 1500);
+		this._levelContainer.setSize(2000, 2000);
 		this._levelContainer.init(this._player);
 		this.addChild(this._levelContainer);
 	}

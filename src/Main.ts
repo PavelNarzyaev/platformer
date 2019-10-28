@@ -24,7 +24,7 @@ export class Main {
 
 	private initMainContainer():void {
 		this._mainContainer = new MainContainer();
-		this._mainContainer.setSize(1000, 1000);
+		this._mainContainer.setSize(1500, 1000);
 		this._mainContainer.init();
 		Globals.pixiApp.stage.addChild(this._mainContainer);
 	}
@@ -77,12 +77,27 @@ export class Main {
 	}
 
 	private alignMainContainer():void {
-		const factorW:number = this._windowSize.width / this._mainContainer.w;
-		const factorH:number = this._windowSize.height / this._mainContainer.h;
-		const scale:number = Math.min(factorW, factorH);
-		this._mainContainer.scale.x = this._mainContainer.scale.y = scale;
-		this._mainContainer.x = Math.round((this._windowSize.width - this._mainContainer.w * scale) / 2);
-		this._mainContainer.y = Math.round((this._windowSize.height - this._mainContainer.h * scale) / 2);
+		let scale:number;
+		const windowRatio:number = this._windowSize.width / this._windowSize.height;
+		const containerRatio:number = this._mainContainer.w / this._mainContainer.h;
+		if (windowRatio !== containerRatio) {
+			if (windowRatio < containerRatio) {
+				scale = this._windowSize.width / this._mainContainer.w;
+				this._mainContainer.scale.x = this._mainContainer.scale.y = scale;
+				this._mainContainer.x = 0;
+				this._mainContainer.y = Math.round((this._windowSize.height - this._mainContainer.h * scale) / 2);
+			} else {
+				scale = this._windowSize.height / this._mainContainer.h;
+				this._mainContainer.scale.x = this._mainContainer.scale.y = scale;
+				this._mainContainer.x = Math.round((this._windowSize.width - this._mainContainer.w * scale) / 2);
+				this._mainContainer.y = 0;
+			}
+		} else {
+			scale = this._windowSize.width / this._mainContainer.w;
+			this._mainContainer.scale.x = this._mainContainer.scale.y = scale;
+			this._mainContainer.x = 0;
+			this._mainContainer.y = 0;
+		}
 	}
 
 	private alignOutOfBoundsCover():void {
