@@ -1,16 +1,17 @@
-import DisplayObject = PIXI.DisplayObject;
-import Rectangle = PIXI.Rectangle;
+import Container = PIXI.Container;
 
 export default class HitTest {
-	public static horizontal(obj1:DisplayObject, obj2:DisplayObject):boolean {
-		const bounds1:Rectangle = obj1.getBounds();
-		const bounds2:Rectangle = obj2.getBounds();
-		return !(bounds1.right <= bounds2.left || bounds1.left >= bounds2.right);
+	public static horizontal(obj1:Container, obj2:Container):boolean {
+		return !(
+			obj1.x + obj1.width <= obj2.x ||
+			obj1.x >= obj2.x + obj2.width
+		)
 	}
 
-	public static vertical(obj1:DisplayObject, obj2:DisplayObject):boolean {
-		const bounds1:Rectangle = obj1.getBounds();
-		const bounds2:Rectangle = obj2.getBounds();
-		return !(bounds1.bottom <= bounds2.top || bounds1.top >= bounds2.bottom);
+	public static vertical(obj1:Container, obj2:Container):boolean {
+		return !(
+			obj1.y + obj1.height <= obj2.y ||
+			obj1.y >= obj2.y + obj2.height
+		);
 	}
 }

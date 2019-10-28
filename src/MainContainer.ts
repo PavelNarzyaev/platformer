@@ -5,8 +5,7 @@ import LevelContainer from "./LevelContainer";
 import Globals from "./Globals";
 
 export default class MainContainer extends View {
-	public static readonly SANDBLOCK_BACK_SKIN_NAME:string = "img/SandBlock_back.png";
-	public static readonly SANDBLOCK_FRONT_SKIN_NAME:string = "img/SandBlock_front.png";
+	public static readonly SANDBLOCK_SKIN_NAME:string = "img/SandBlock.png";
 	private _levelContainer:LevelContainer;
 	private _player:Player;
 
@@ -22,8 +21,7 @@ export default class MainContainer extends View {
 	private startLoading():void {
 		const loader:Loader = new Loader;
 		loader.add(Player.SKIN_NAME);
-		loader.add(MainContainer.SANDBLOCK_BACK_SKIN_NAME);
-		loader.add(MainContainer.SANDBLOCK_FRONT_SKIN_NAME);
+		loader.add(MainContainer.SANDBLOCK_SKIN_NAME);
 		loader.onComplete.add(() => { this.completeLoadingHandler(); });
 		loader.load();
 	}

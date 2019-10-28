@@ -6,6 +6,8 @@ import {View} from "./View";
 import Sprite = PIXI.Sprite;
 import MainContainer from "./MainContainer";
 import Container = PIXI.Container;
+import Texture = PIXI.Texture;
+import Rectangle = PIXI.Rectangle;
 
 export default class LevelContainer extends View {
 	private static readonly UP:string = "ArrowUp";
@@ -54,26 +56,36 @@ export default class LevelContainer extends View {
 		this.initBlock(0, this.h, this.w, 50);
 		this.initBlock(this.w, 0, 50, this.h);
 		this.initBlock(0, -50, this.w, 50);
-		this.initSandBlock(
-			300,
-			this.h - 139,
-		);
-		this.initSandBlock(
-			300 + 142,
-			this.h - 250,
-		);
-		this.initSandBlock(
-			500,
-			this.h - 400,
-		);
-		this.initSandBlock(
-			900,
-			this.h - 300,
-		);
-		this.initSandBlock(
-			1200,
-			this.h - 190,
-		);
+		this.initSandBlock(0, 0);
+		this.initSandBlock(1, 0);
+		this.initSandBlock(2, 0);
+		this.initSandBlock(3, 0);
+		this.initSandBlock(4, 0);
+		this.initSandBlock(5, 0);
+		this.initSandBlock(6, 0);
+		this.initSandBlock(7, 0);
+		this.initSandBlock(8, 0);
+		this.initSandBlock(9, 0);
+		this.initSandBlock(10, 0);
+		this.initSandBlock(11, 0);
+		this.initSandBlock(12, 0);
+		this.initSandBlock(13, 0);
+		this.initSandBlock(2, 1);
+		this.initSandBlock(3, 1);
+		this.initSandBlock(4, 1);
+		this.initSandBlock(11, 1);
+		this.initSandBlock(12, 1);
+		this.initSandBlock(3, 2);
+		this.initSandBlock(7, 2);
+		this.initSandBlock(8, 2);
+		this.initSandBlock(9, 2);
+		this.initSandBlock(7, 3);
+		this.initSandBlock(9, 4);
+		this.initSandBlock(12, 4);
+		this.initSandBlock(13, 4);
+		this.initSandBlock(14, 4);
+		this.initSandBlock(13, 5);
+		this.initSandBlock(14, 5);
 	}
 
 	private initBlock(blockX:number, blockY:number, blockWidth:number, blockHeight:number):void {
@@ -87,21 +99,26 @@ export default class LevelContainer extends View {
 		this._blocks.push(newBlock);
 	}
 
-	private initSandBlock(blockX:number, blockY:number):void {
+	private initSandBlock(posX:number, posY:number):void {
 		const blockWidth:number = 142;
 		const blockHeight:number = 139;
+		const blockX:number = posX * blockWidth;
+		const blockY:number = this.h - posY * blockHeight;
 		this.initBlock(blockX, blockY, blockWidth, blockHeight);
 
-		const backSkin:Sprite = Sprite.from(MainContainer.SANDBLOCK_BACK_SKIN_NAME);
-		backSkin.cacheAsBitmap = true;
-		backSkin.x = blockX - 30;
+		const backSkin:Sprite = Sprite.from(MainContainer.SANDBLOCK_SKIN_NAME);
+		backSkin.x = blockX - 31;
 		backSkin.y = blockY - 15;
 		this._backContainer.addChild(backSkin);
 
-		const frontSkin:Sprite = Sprite.from(MainContainer.SANDBLOCK_FRONT_SKIN_NAME);
-		frontSkin.cacheAsBitmap = true;
-		frontSkin.x = blockX - 30;
-		frontSkin.y = blockY - 15;
+		const frontSkin:Sprite = new Sprite(
+			new Texture(
+				Texture.from(MainContainer.SANDBLOCK_SKIN_NAME).baseTexture,
+				new Rectangle(0, 15, 172, 156),
+			)
+		);
+		frontSkin.x = backSkin.x;
+		frontSkin.y = backSkin.y + 15;
 		this._frontContainer.addChild(frontSkin);
 	}
 
