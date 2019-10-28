@@ -4,7 +4,7 @@ import Sprite = PIXI.Sprite;
 export default class Player extends Container {
 	public static readonly SKIN_NAME:string = "img/player.png";
 	public static readonly GRAVITY:number = 0.15;
-	public static readonly JUMP_SPEED:number = -15;
+	public static readonly JUMP_SPEED:number = -8;
 	public static readonly MOVING_SPEED:number = 4;
 	public static readonly LEFT:symbol = Symbol();
 	public static readonly RIGHT:symbol = Symbol();

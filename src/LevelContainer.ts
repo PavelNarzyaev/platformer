@@ -3,6 +3,9 @@ import Graphics = PIXI.Graphics;
 import {addEvent, default as Globals} from "./Globals";
 import HitTest from "./HitTest";
 import {View} from "./View";
+import Sprite = PIXI.Sprite;
+import MainContainer from "./MainContainer";
+import Container = PIXI.Container;
 
 export default class LevelContainer extends View {
 	private static readonly UP:string = "ArrowUp";
@@ -12,6 +15,8 @@ export default class LevelContainer extends View {
 	private _pressedButtons:Map<string, boolean> = new Map<string, boolean>();
 	private _blocks:Graphics[] = [];
 	private _player:Player;
+	private _backContainer:Container;
+	private _frontContainer:Container;
 
 	constructor() {
 		super();
@@ -19,10 +24,17 @@ export default class LevelContainer extends View {
 	}
 
 	public init(player:Player):void {
+		this.initBackContainer();
 		this.initPlayer(player);
+		this.initFrontContainer();
 		this.initBlocks();
 		this.addKeyListeners();
 		this.launchTicker();
+	}
+
+	private initBackContainer():void {
+		this._backContainer = new Container();
+		this.addChild(this._backContainer);
 	}
 
 	private initPlayer(player:Player):void {
@@ -32,28 +44,35 @@ export default class LevelContainer extends View {
 		this.addChild(this._player);
 	}
 
+	private initFrontContainer():void {
+		this._frontContainer = new Container();
+		this.addChild(this._frontContainer);
+	}
+
 	private initBlocks():void {
 		this.initBlock(-50, 0, 50, this.h);
 		this.initBlock(0, this.h, this.w, 50);
 		this.initBlock(this.w, 0, 50, this.h);
 		this.initBlock(0, -50, this.w, 50);
-		this.initBlock(
-			Math.round(this.w / 2) - 100,
-			Math.round(this.h / 2) - 25,
-			200,
-			50,
+		this.initSandBlock(
+			300,
+			this.h - 139,
 		);
-		this.initBlock(
-			Math.round(this.w * .75) - 100,
-			Math.round(this.h * .75) - 25,
-			200,
-			50,
+		this.initSandBlock(
+			300 + 142,
+			this.h - 250,
 		);
-		this.initBlock(
-			Math.round(this.w * .25) - 100,
-			Math.round(this.h * .25) - 25,
-			200,
-			50,
+		this.initSandBlock(
+			500,
+			this.h - 400,
+		);
+		this.initSandBlock(
+			900,
+			this.h - 300,
+		);
+		this.initSandBlock(
+			1200,
+			this.h - 190,
 		);
 	}
 
@@ -61,11 +80,29 @@ export default class LevelContainer extends View {
 		const newBlock:Graphics = new Graphics();
 		newBlock.x = blockX;
 		newBlock.y = blockY;
-		newBlock.beginFill(0x0000FF);
+		newBlock.beginFill(0x000000, 0);
 		newBlock.drawRect(0, 0, blockWidth, blockHeight);
 		newBlock.endFill();
 		this.addChild(newBlock);
 		this._blocks.push(newBlock);
+	}
+
+	private initSandBlock(blockX:number, blockY:number):void {
+		const blockWidth:number = 142;
+		const blockHeight:number = 139;
+		this.initBlock(blockX, blockY, blockWidth, blockHeight);
+
+		const backSkin:Sprite = Sprite.from(MainContainer.SANDBLOCK_BACK_SKIN_NAME);
+		backSkin.cacheAsBitmap = true;
+		backSkin.x = blockX - 30;
+		backSkin.y = blockY - 15;
+		this._backContainer.addChild(backSkin);
+
+		const frontSkin:Sprite = Sprite.from(MainContainer.SANDBLOCK_FRONT_SKIN_NAME);
+		frontSkin.cacheAsBitmap = true;
+		frontSkin.x = blockX - 30;
+		frontSkin.y = blockY - 15;
+		this._frontContainer.addChild(frontSkin);
 	}
 
 	private addKeyListeners():void {

@@ -5,6 +5,8 @@ import LevelContainer from "./LevelContainer";
 import Globals from "./Globals";
 
 export default class MainContainer extends View {
+	public static readonly SANDBLOCK_BACK_SKIN_NAME:string = "img/SandBlock_back.png";
+	public static readonly SANDBLOCK_FRONT_SKIN_NAME:string = "img/SandBlock_front.png";
 	private _levelContainer:LevelContainer;
 	private _player:Player;
 
@@ -20,6 +22,8 @@ export default class MainContainer extends View {
 	private startLoading():void {
 		const loader:Loader = new Loader;
 		loader.add(Player.SKIN_NAME);
+		loader.add(MainContainer.SANDBLOCK_BACK_SKIN_NAME);
+		loader.add(MainContainer.SANDBLOCK_FRONT_SKIN_NAME);
 		loader.onComplete.add(() => { this.completeLoadingHandler(); });
 		loader.load();
 	}
@@ -51,11 +55,11 @@ export default class MainContainer extends View {
 		const minX:number = (this._levelContainer.w - this.w) * -1;
 		const maxX:number = 0;
 		const calculatedX:number = ((this.w - this._player.width) / 2) - this._player.x;
-		this._levelContainer.x = Math.min(maxX, Math.max(minX, calculatedX));
+		this._levelContainer.x = Math.round(Math.min(maxX, Math.max(minX, calculatedX)));
 
 		const minY:number = (this._levelContainer.h - this.h) * -1;
 		const maxY:number = 0;
 		const calculatedY:number = ((this.h - this._player.height) / 2) - this._player.y;
-		this._levelContainer.y = Math.min(maxY, Math.max(minY, calculatedY));
+		this._levelContainer.y = Math.round(Math.min(maxY, Math.max(minY, calculatedY)));
 	}
 }
