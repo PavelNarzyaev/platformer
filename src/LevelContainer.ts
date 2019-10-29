@@ -42,7 +42,7 @@ export default class LevelContainer extends View {
 	private initPlayer(player:Player):void {
 		this._player = player;
 		this._player.x = 50;
-		this._player.y = this.h - this._player.height - 100;
+		this._player.y = this.h - this._player.height - 200;
 		this.addChild(this._player);
 	}
 
@@ -70,16 +70,16 @@ export default class LevelContainer extends View {
 		this.initSandBlock(11, 0);
 		this.initSandBlock(12, 0);
 		this.initSandBlock(13, 0);
+		this.initSandBlock(14, 0);
 		this.initSandBlock(2, 1);
 		this.initSandBlock(3, 1);
 		this.initSandBlock(4, 1);
-		this.initSandBlock(11, 1);
 		this.initSandBlock(12, 1);
+		this.initSandBlock(13, 1);
 		this.initSandBlock(3, 2);
 		this.initSandBlock(7, 2);
 		this.initSandBlock(8, 2);
 		this.initSandBlock(9, 2);
-		this.initSandBlock(7, 3);
 		this.initSandBlock(9, 4);
 		this.initSandBlock(12, 4);
 		this.initSandBlock(13, 4);
@@ -100,8 +100,8 @@ export default class LevelContainer extends View {
 	}
 
 	private initSandBlock(posX:number, posY:number):void {
-		const blockWidth:number = 142;
-		const blockHeight:number = 139;
+		const blockWidth:number = 138;
+		const blockHeight:number = 138;
 		const blockX:number = posX * blockWidth;
 		const blockY:number = this.h - posY * blockHeight;
 		this.initBlock(blockX, blockY, blockWidth, blockHeight);
