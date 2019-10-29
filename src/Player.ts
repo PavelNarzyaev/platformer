@@ -2,8 +2,10 @@ import Container = PIXI.Container;
 import Sprite = PIXI.Sprite;
 import Rectangle = PIXI.Rectangle;
 import Texture = PIXI.Texture;
+import CollisionObject from "./CollisionObject";
+import Graphics = PIXI.Graphics;
 
-export default class Player extends Container {
+export default class Player extends CollisionObject {
 	public static readonly SKIN_NAME:string = "img/alien.png";
 	public static readonly GRAVITY:number = 0.15;
 	public static readonly JUMP_SPEED:number = -8;
@@ -23,6 +25,18 @@ export default class Player extends Container {
 		super();
 		this.initSkinFlipContainer();
 		this.initSkin();
+
+		/*
+		const temp:Graphics = new Graphics();
+		temp.beginFill(0xff0000, .5);
+		temp.drawRect(
+			this.collisionLeft(),
+			this.collisionTop(),
+			this.collisionRight() - this.collisionLeft(),
+			this.collisionBottom() - this.collisionTop(),
+		);
+		this.addChild(temp);
+		*/
 	}
 
 	private initSkinFlipContainer():void {
@@ -73,5 +87,21 @@ export default class Player extends Container {
 
 	public getMovingDirection():symbol {
 		return this._movingDirection;
+	}
+
+	public collisionLeft():number {
+		return 110;
+	}
+
+	public collisionRight():number {
+		return 250;
+	}
+
+	public collisionTop():number {
+		return 30;
+	}
+
+	public collisionBottom():number {
+		return 130;
 	}
 }

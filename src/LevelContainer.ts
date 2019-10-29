@@ -161,7 +161,7 @@ export default class LevelContainer extends View {
 		switch (this._player.getMovingDirection()) {
 			case Player.LEFT:
 				this._blocks.forEach((block:Graphics) => {
-					limitX = block.x + block.width;
+					limitX = block.x + block.width - this._player.collisionLeft();
 					if (
 						this._player.x >= limitX &&
 						this._player.x - Player.MOVING_SPEED < limitX &&
@@ -178,7 +178,7 @@ export default class LevelContainer extends View {
 
 			case Player.RIGHT:
 				this._blocks.forEach((block:Graphics) => {
-					limitX = block.x - this._player.width;
+					limitX = block.x - this._player.collisionRight();
 					if (
 						this._player.x <= limitX &&
 						this._player.x + Player.MOVING_SPEED > limitX &&
@@ -200,7 +200,7 @@ export default class LevelContainer extends View {
 		this._player.speedY += Player.GRAVITY;
 		if (this._player.speedY > 0) {
 			this._blocks.forEach((block:Graphics) => {
-				limitY = block.y - this._player.height;
+				limitY = block.y - this._player.collisionBottom();
 				if (
 					this._player.y <= limitY &&
 					this._player.y + this._player.speedY > limitY &&
@@ -217,7 +217,7 @@ export default class LevelContainer extends View {
 			}
 		} else if (this._player.speedY < 0) {
 			this._blocks.forEach((block:Graphics) => {
-				limitY = block.y + block.height;
+				limitY = block.y + block.height - this._player.collisionTop();
 				if (
 					this._player.y >= limitY &&
 					this._player.y + this._player.speedY < limitY &&
