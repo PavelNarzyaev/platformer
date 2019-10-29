@@ -114,7 +114,7 @@ export default class LevelContainer extends View {
 		const frontSkin:Sprite = new Sprite(
 			new Texture(
 				Texture.from(MainContainer.SANDBLOCK_SKIN_NAME).baseTexture,
-				new Rectangle(0, 15, 172, 156),
+				new Rectangle(0, 15, 169, 156),
 			)
 		);
 		frontSkin.x = backSkin.x;

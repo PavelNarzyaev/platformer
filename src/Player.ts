@@ -3,7 +3,6 @@ import Sprite = PIXI.Sprite;
 import Rectangle = PIXI.Rectangle;
 import Texture = PIXI.Texture;
 import CollisionObject from "./CollisionObject";
-import Graphics = PIXI.Graphics;
 
 export default class Player extends CollisionObject {
 	public static readonly SKIN_NAME:string = "img/alien.png";
@@ -25,18 +24,7 @@ export default class Player extends CollisionObject {
 		super();
 		this.initSkinFlipContainer();
 		this.initSkin();
-
-		/*
-		const temp:Graphics = new Graphics();
-		temp.beginFill(0xff0000, .5);
-		temp.drawRect(
-			this.collisionLeft(),
-			this.collisionTop(),
-			this.collisionRight() - this.collisionLeft(),
-			this.collisionBottom() - this.collisionTop(),
-		);
-		this.addChild(temp);
-		*/
+		this.showCollisionRectangle();
 	}
 
 	private initSkinFlipContainer():void {
