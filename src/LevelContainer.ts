@@ -16,18 +16,20 @@ export default class LevelContainer extends View {
 	private static readonly RIGHT:string = "ArrowRight";
 	private _pressedButtons:Map<string, boolean> = new Map<string, boolean>();
 	private _blocks:Graphics[] = [];
-	private _player:Player;
 	private _backContainer:Container;
 	private _frontContainer:Container;
 
-	constructor() {
+	constructor(
+		private _player:Player,
+	) {
 		super();
 		this.showTestBackground(0xCFCFCF, .5);
 	}
 
-	public init(player:Player):void {
+	protected init():void {
+		super.init();
 		this.initBackContainer();
-		this.initPlayer(player);
+		this.initPlayer();
 		this.initFrontContainer();
 		this.initBlocks();
 		this.addKeyListeners();
@@ -39,8 +41,7 @@ export default class LevelContainer extends View {
 		this.addChild(this._backContainer);
 	}
 
-	private initPlayer(player:Player):void {
-		this._player = player;
+	private initPlayer():void {
 		this._player.x = 50;
 		this._player.y = this.h - this._player.height - 200;
 		this.addChild(this._player);

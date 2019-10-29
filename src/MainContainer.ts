@@ -14,7 +14,8 @@ export default class MainContainer extends View {
 		this.showTestBackground(0x00FF00);
 	}
 
-	public init():void {
+	protected init():void {
+		super.init();
 		this.startLoading();
 	}
 
@@ -37,9 +38,8 @@ export default class MainContainer extends View {
 	}
 
 	private initLevelContainer():void {
-		this._levelContainer = new LevelContainer();
+		this._levelContainer = new LevelContainer(this._player);
 		this._levelContainer.setSize(2000, 2000);
-		this._levelContainer.init(this._player);
 		this.addChild(this._levelContainer);
 	}
 

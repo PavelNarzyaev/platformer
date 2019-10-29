@@ -25,7 +25,6 @@ export class Main {
 	private initMainContainer():void {
 		this._mainContainer = new MainContainer();
 		this._mainContainer.setSize(1500, 1000);
-		this._mainContainer.init();
 		Globals.pixiApp.stage.addChild(this._mainContainer);
 	}
 

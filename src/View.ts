@@ -11,6 +11,7 @@ class View extends Container {
 class ResizableView extends View {
 	public w:number;
 	public h:number;
+	private _inited:boolean = false;
 
 	constructor() {
 		super();
@@ -39,6 +40,13 @@ class ResizableView extends View {
 	}
 
 	protected applySize():void {
+		if (!this._inited) {
+			this._inited = true;
+			this.init();
+		}
+	}
+
+	protected init():void {
 	}
 }
 
