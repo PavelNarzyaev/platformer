@@ -5,7 +5,6 @@ import Globals from "./Globals";
 import {pixiLoading} from "./Promises";
 
 export default class MainContainer extends View {
-	public static readonly SANDBLOCK_SKIN_NAME:string = "img/SandBlock.png";
 	private _levelContainer:LevelContainer;
 	private _player:Player;
 
@@ -20,7 +19,6 @@ export default class MainContainer extends View {
 
 	private loading():void {
 		pixiLoading(Player.SKIN_NAME)
-			.then(() => { return pixiLoading(MainContainer.SANDBLOCK_SKIN_NAME) })
 			.then(() => { this.completeLoadingHandler(); });
 	}
 
@@ -35,7 +33,10 @@ export default class MainContainer extends View {
 	}
 
 	private initLevelContainer():void {
-		this._levelContainer = new LevelContainer(this._player);
+		this._levelContainer = new LevelContainer(
+			this._player,
+			"levels/level_1.json"
+		);
 		this._levelContainer.setSize(2000, 2000);
 		this.addChild(this._levelContainer);
 	}

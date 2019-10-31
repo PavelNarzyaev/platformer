@@ -4,11 +4,10 @@ import {addEvent, default as Globals} from "./Globals";
 import HitTest from "./HitTest";
 import {View} from "./View";
 import Sprite = PIXI.Sprite;
-import MainContainer from "./MainContainer";
 import Container = PIXI.Container;
 import Texture = PIXI.Texture;
 import Rectangle = PIXI.Rectangle;
-import {xhrJsonLoading} from "./Promises";
+import {pixiLoading, xhrJsonLoading} from "./Promises";
 
 export default class LevelContainer extends View {
 	private static readonly UP:string = "ArrowUp";
@@ -17,12 +16,14 @@ export default class LevelContainer extends View {
 	private static readonly RIGHT:string = "ArrowRight";
 	private _pressedButtons:Map<string, boolean> = new Map<string, boolean>();
 	private _blocks:Graphics[] = [];
+	private _blocksTypes:Map<string, IType>;
 	private _backContainer:Container;
 	private _frontContainer:Container;
 	private _level:ILevel;
 
 	constructor(
 		private _player:Player,
+		private _levelUrl:string,
 	) {
 		super();
 	}
@@ -33,15 +34,27 @@ export default class LevelContainer extends View {
 	}
 
 	private loading():void {
-		xhrJsonLoading("levels/level_1.json")
+		let typesNum:number;
+		let loadedTypesImagesCounter:number = 0;
+		this._blocksTypes = new Map<string, IType>();
+		xhrJsonLoading(this._levelUrl)
 			.then((level:ILevel) => {
 				this._level = level;
-				this.initBackContainer();
-				this.initPlayer();
-				this.initFrontContainer();
-				this.initBlocks();
-				this.addKeyListeners();
-				this.launchTicker();
+				typesNum = this._level.types.length;
+				this._level.types.forEach((type:IType) => {
+					pixiLoading(type.image).then(() => {
+						this._blocksTypes.set(type.id, type);
+						loadedTypesImagesCounter++;
+						if (loadedTypesImagesCounter == typesNum) {
+							this.initBackContainer();
+							this.initPlayer();
+							this.initFrontContainer();
+							this.initBlocks();
+							this.addKeyListeners();
+							this.launchTicker();
+						}
+					});
+				});
 			});
 	}
 
@@ -62,47 +75,37 @@ export default class LevelContainer extends View {
 	}
 
 	private initBlocks():void {
-		this.initBlock(-50, 0, 50, this.h);
-		this.initBlock(0, this.h, this.w, 50);
-		this.initBlock(this.w, 0, 50, this.h);
-		this.initBlock(0, -50, this.w, 50);
 		this._level.blocks.forEach((block:IBlock) => {
-			this.initSandBlock(block.x, block.y);
+			this.initBlock(block);
 		});
 	}
 
-	private initSandBlock(posX:number, posY:number):void {
-		const blockWidth:number = 138;
-		const blockHeight:number = 138;
-		const blockX:number = posX;
-		const blockY:number = posY;
-		this.initBlock(blockX, blockY, blockWidth, blockHeight);
+	private initBlock(block:IBlock):void {
+		const blockType:IType = this._blocksTypes.get(block.type);
+		const newBlock:Graphics = new Graphics();
+		newBlock.x = block.x;
+		newBlock.y = block.y;
+		newBlock.beginFill(0x000000, 0);
+		newBlock.drawRect(0, 0, blockType.hit.width, blockType.hit.height);
+		newBlock.endFill();
+		this.addChild(newBlock);
+		this._blocks.push(newBlock);
 
-		const backSkin:Sprite = Sprite.from(MainContainer.SANDBLOCK_SKIN_NAME);
-		backSkin.x = blockX - 31;
-		backSkin.y = blockY - 15;
+		const backSkin:Sprite = Sprite.from(blockType.image);
+		backSkin.x = block.x - blockType.hit.x;
+		backSkin.y = block.y - blockType.hit.y;
 		this._backContainer.addChild(backSkin);
 
+		const front:IFront = blockType.front;
 		const frontSkin:Sprite = new Sprite(
 			new Texture(
-				Texture.from(MainContainer.SANDBLOCK_SKIN_NAME).baseTexture,
-				new Rectangle(0, 15, 169, 156),
+				Texture.from(blockType.image).baseTexture,
+				new Rectangle(front.x, front.y, front.width, front.height),
 			)
 		);
 		frontSkin.x = backSkin.x;
 		frontSkin.y = backSkin.y + 15;
 		this._frontContainer.addChild(frontSkin);
-	}
-
-	private initBlock(blockX:number, blockY:number, blockWidth:number, blockHeight:number):void {
-		const newBlock:Graphics = new Graphics();
-		newBlock.x = blockX;
-		newBlock.y = blockY;
-		newBlock.beginFill(0x000000, 0);
-		newBlock.drawRect(0, 0, blockWidth, blockHeight);
-		newBlock.endFill();
-		this.addChild(newBlock);
-		this._blocks.push(newBlock);
 	}
 
 	private addKeyListeners():void {
@@ -270,10 +273,33 @@ export default class LevelContainer extends View {
 }
 
 interface ILevel {
+	types:IType[];
 	blocks:IBlock[];
 }
 
+interface IType {
+	id:string;
+	image:string;
+	hit:IHit;
+	front:IFront;
+}
+
+interface IHit {
+	x:number;
+	y:number;
+	width:number;
+	height:number;
+}
+
+interface IFront {
+	x:number;
+	y:number;
+	width:number;
+	height:number;
+}
+
 interface IBlock {
+	type:string;
 	x:number;
 	y:number;
 }
