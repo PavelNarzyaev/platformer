@@ -1,6 +1,5 @@
 import Player from "./Player";
 import Graphics = PIXI.Graphics;
-import {addEvent, default as Globals} from "./Globals";
 import HitTest from "./HitTest";
 import {View} from "./View";
 import Sprite = PIXI.Sprite;
@@ -8,12 +7,14 @@ import Container = PIXI.Container;
 import Texture = PIXI.Texture;
 import Rectangle = PIXI.Rectangle;
 import {pixiLoading, xhrJsonLoading} from "./Promises";
+import {addEvent, default as Globals} from "./Globals";
 
 export default class LevelContainer extends View {
 	private static readonly UP:string = "ArrowUp";
 	private static readonly DOWN:string = "ArrowDown";
 	private static readonly LEFT:string = "ArrowLeft";
 	private static readonly RIGHT:string = "ArrowRight";
+	private static readonly BACKQUOTE:string = "Backquote";
 	private _pressedButtons:Map<string, boolean> = new Map<string, boolean>();
 	private _blocks:Graphics[] = [];
 	private _blocksTypes:Map<string, IType> = new Map<string, IType>();
@@ -245,6 +246,11 @@ export default class LevelContainer extends View {
 			case LevelContainer.LEFT:
 			case LevelContainer.RIGHT:
 				this._pressedButtons.set(e.code, true);
+		}
+
+		if (e.code === LevelContainer.BACKQUOTE && !process.env.RELEASE) {
+			Globals.developerMode.set(!Globals.developerMode.get());
+			console.log("Developer mode is " + (Globals.developerMode.get() ? "ON" : "OFF"));
 		}
 	}
 
