@@ -16,9 +16,10 @@ export default class LevelContainer extends View {
 	private static readonly RIGHT:string = "ArrowRight";
 	private _pressedButtons:Map<string, boolean> = new Map<string, boolean>();
 	private _blocks:Graphics[] = [];
-	private _blocksTypes:Map<string, IType>;
+	private _blocksTypes:Map<string, IType> = new Map<string, IType>();
 	private _backContainer:Container;
 	private _frontContainer:Container;
+	private _frontTexturesCache:Map<string, Texture> = new Map<string, Texture>();
 	private _level:ILevel;
 
 	constructor(
@@ -36,7 +37,6 @@ export default class LevelContainer extends View {
 	private loading():void {
 		let typesNum:number;
 		let loadedTypesImagesCounter:number = 0;
-		this._blocksTypes = new Map<string, IType>();
 		xhrJsonLoading(this._levelUrl)
 			.then((level:ILevel) => {
 				this._level = level;
@@ -97,12 +97,17 @@ export default class LevelContainer extends View {
 		this._backContainer.addChild(backSkin);
 
 		const front:IFront = blockType.front;
-		const frontSkin:Sprite = new Sprite(
-			new Texture(
+		let frontTexture:Texture;
+		if (!this._frontTexturesCache.get(blockType.id)) {
+			frontTexture = new Texture(
 				Texture.from(blockType.image).baseTexture,
 				new Rectangle(front.x, front.y, front.width, front.height),
-			)
-		);
+			);
+			this._frontTexturesCache.set(blockType.id, frontTexture);
+		} else {
+			frontTexture = this._frontTexturesCache.get(blockType.id);
+		}
+		const frontSkin:Sprite = new Sprite(frontTexture);
 		frontSkin.x = backSkin.x;
 		frontSkin.y = backSkin.y + 15;
 		this._frontContainer.addChild(frontSkin);
