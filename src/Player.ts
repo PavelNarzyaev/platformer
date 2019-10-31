@@ -24,7 +24,6 @@ export default class Player extends CollisionObject {
 		super();
 		this.initSkinFlipContainer();
 		this.initSkin();
-		this.showCollisionRectangle();
 	}
 
 	private initSkinFlipContainer():void {

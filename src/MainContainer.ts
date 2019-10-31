@@ -11,7 +11,6 @@ export default class MainContainer extends View {
 
 	constructor() {
 		super();
-		this.showTestBackground(0x00FF00);
 	}
 
 	protected init():void {

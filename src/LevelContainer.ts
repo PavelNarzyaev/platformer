@@ -23,7 +23,6 @@ export default class LevelContainer extends View {
 		private _player:Player,
 	) {
 		super();
-		this.showTestBackground(0xCFCFCF, .5);
 	}
 
 	protected init():void {
