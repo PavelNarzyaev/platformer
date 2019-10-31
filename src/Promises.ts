@@ -4,7 +4,7 @@ import LoaderOptions = PIXI.loaders.LoaderOptions;
 import Resource = PIXI.loaders.Resource;
 
 export function pixiLoading(url:string):Promise<any> {
-	return new Promise((resolve, reject) => {
+	return new Promise<any>((resolve, reject) => {
 		const loader:Loader = new Loader();
 
 		let success:boolean = false;
@@ -35,5 +35,23 @@ export function pixiLoading(url:string):Promise<any> {
 		loaderOptions.loadType = Resource.LOAD_TYPE.XHR;
 		loader.add(url, url, loaderOptions);
 		loader.load();
+	});
+}
+
+export function xhrJsonLoading(url:string):Promise<any> {
+	return new Promise<any>((resolve, reject) => {
+		const xhr:XMLHttpRequest = new XMLHttpRequest();
+		xhr.responseType = "json";
+		xhr.open("GET", url, true);
+		xhr.onreadystatechange = () => {
+			if (xhr.readyState === 4) {
+				if (xhr.status === 200) {
+					resolve(xhr.response);
+				} else {
+					reject(xhr.status);
+				}
+			}
+		};
+		xhr.send();
 	});
 }

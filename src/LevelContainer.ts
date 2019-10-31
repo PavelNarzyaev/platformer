@@ -8,6 +8,7 @@ import MainContainer from "./MainContainer";
 import Container = PIXI.Container;
 import Texture = PIXI.Texture;
 import Rectangle = PIXI.Rectangle;
+import {xhrJsonLoading} from "./Promises";
 
 export default class LevelContainer extends View {
 	private static readonly UP:string = "ArrowUp";
@@ -18,6 +19,7 @@ export default class LevelContainer extends View {
 	private _blocks:Graphics[] = [];
 	private _backContainer:Container;
 	private _frontContainer:Container;
+	private _level:ILevel;
 
 	constructor(
 		private _player:Player,
@@ -27,12 +29,20 @@ export default class LevelContainer extends View {
 
 	protected init():void {
 		super.init();
-		this.initBackContainer();
-		this.initPlayer();
-		this.initFrontContainer();
-		this.initBlocks();
-		this.addKeyListeners();
-		this.launchTicker();
+		this.loading();
+	}
+
+	private loading():void {
+		xhrJsonLoading("levels/level_1.json")
+			.then((level:ILevel) => {
+				this._level = level;
+				this.initBackContainer();
+				this.initPlayer();
+				this.initFrontContainer();
+				this.initBlocks();
+				this.addKeyListeners();
+				this.launchTicker();
+			});
 	}
 
 	private initBackContainer():void {
@@ -56,54 +66,16 @@ export default class LevelContainer extends View {
 		this.initBlock(0, this.h, this.w, 50);
 		this.initBlock(this.w, 0, 50, this.h);
 		this.initBlock(0, -50, this.w, 50);
-		this.initSandBlock(0, 0);
-		this.initSandBlock(1, 0);
-		this.initSandBlock(2, 0);
-		this.initSandBlock(3, 0);
-		this.initSandBlock(4, 0);
-		this.initSandBlock(5, 0);
-		this.initSandBlock(6, 0);
-		this.initSandBlock(7, 0);
-		this.initSandBlock(8, 0);
-		this.initSandBlock(9, 0);
-		this.initSandBlock(10, 0);
-		this.initSandBlock(11, 0);
-		this.initSandBlock(12, 0);
-		this.initSandBlock(13, 0);
-		this.initSandBlock(14, 0);
-		this.initSandBlock(2, 1);
-		this.initSandBlock(3, 1);
-		this.initSandBlock(4, 1);
-		this.initSandBlock(12, 1);
-		this.initSandBlock(13, 1);
-		this.initSandBlock(3, 2);
-		this.initSandBlock(7, 2);
-		this.initSandBlock(8, 2);
-		this.initSandBlock(9, 2);
-		this.initSandBlock(9, 4);
-		this.initSandBlock(12, 4);
-		this.initSandBlock(13, 4);
-		this.initSandBlock(14, 4);
-		this.initSandBlock(13, 5);
-		this.initSandBlock(14, 5);
-	}
-
-	private initBlock(blockX:number, blockY:number, blockWidth:number, blockHeight:number):void {
-		const newBlock:Graphics = new Graphics();
-		newBlock.x = blockX;
-		newBlock.y = blockY;
-		newBlock.beginFill(0x000000, 0);
-		newBlock.drawRect(0, 0, blockWidth, blockHeight);
-		newBlock.endFill();
-		this.addChild(newBlock);
-		this._blocks.push(newBlock);
+		this._level.blocks.forEach((block:IBlock) => {
+			this.initSandBlock(block.x, block.y);
+		});
 	}
 
 	private initSandBlock(posX:number, posY:number):void {
 		const blockWidth:number = 138;
 		const blockHeight:number = 138;
-		const blockX:number = posX * blockWidth;
-		const blockY:number = this.h - posY * blockHeight;
+		const blockX:number = posX;
+		const blockY:number = posY;
 		this.initBlock(blockX, blockY, blockWidth, blockHeight);
 
 		const backSkin:Sprite = Sprite.from(MainContainer.SANDBLOCK_SKIN_NAME);
@@ -120,6 +92,17 @@ export default class LevelContainer extends View {
 		frontSkin.x = backSkin.x;
 		frontSkin.y = backSkin.y + 15;
 		this._frontContainer.addChild(frontSkin);
+	}
+
+	private initBlock(blockX:number, blockY:number, blockWidth:number, blockHeight:number):void {
+		const newBlock:Graphics = new Graphics();
+		newBlock.x = blockX;
+		newBlock.y = blockY;
+		newBlock.beginFill(0x000000, 0);
+		newBlock.drawRect(0, 0, blockWidth, blockHeight);
+		newBlock.endFill();
+		this.addChild(newBlock);
+		this._blocks.push(newBlock);
 	}
 
 	private addKeyListeners():void {
@@ -284,4 +267,13 @@ export default class LevelContainer extends View {
 				this._pressedButtons.set(e.code, false);
 		}
 	}
+}
+
+interface ILevel {
+	blocks:IBlock[];
+}
+
+interface IBlock {
+	x:number;
+	y:number;
 }
