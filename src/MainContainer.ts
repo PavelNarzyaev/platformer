@@ -1,8 +1,8 @@
 import {View} from "./View";
-import Loader = PIXI.loaders.Loader;
 import Player from "./Player";
 import LevelContainer from "./LevelContainer";
 import Globals from "./Globals";
+import {pixiLoading} from "./Promises";
 
 export default class MainContainer extends View {
 	public static readonly SANDBLOCK_SKIN_NAME:string = "img/SandBlock.png";
@@ -15,15 +15,13 @@ export default class MainContainer extends View {
 
 	protected init():void {
 		super.init();
-		this.startLoading();
+		this.loading();
 	}
 
-	private startLoading():void {
-		const loader:Loader = new Loader;
-		loader.add(Player.SKIN_NAME);
-		loader.add(MainContainer.SANDBLOCK_SKIN_NAME);
-		loader.onComplete.add(() => { this.completeLoadingHandler(); });
-		loader.load();
+	private loading():void {
+		pixiLoading(Player.SKIN_NAME)
+			.then(() => { return pixiLoading(MainContainer.SANDBLOCK_SKIN_NAME) })
+			.then(() => { this.completeLoadingHandler(); });
 	}
 
 	private completeLoadingHandler():void {
