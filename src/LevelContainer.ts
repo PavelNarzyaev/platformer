@@ -1,6 +1,5 @@
 import Player from "./Player";
 import Graphics = PIXI.Graphics;
-import HitTest from "./HitTest";
 import {View} from "./View";
 import Sprite = PIXI.Sprite;
 import Container = PIXI.Container;
@@ -8,29 +7,26 @@ import Texture = PIXI.Texture;
 import Rectangle = PIXI.Rectangle;
 import {pixiLoading, xhrJsonLoading} from "./Promises";
 import {addEvent, default as Globals} from "./Globals";
-import {POINTER_DOWN, POINTER_MOVE, POINTER_UP, POINTER_UP_OUTSIDE} from "./PointerEvents";
+import {POINTER_DOWN, POINTER_MOVE, POINTER_UP, POINTER_UP_OUTSIDE} from "./consts/PointerEvents";
 import InteractionEvent = PIXI.interaction.InteractionEvent;
 import Point = PIXI.Point;
+import {KEY_BACKQUOTE, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_UP} from "./consts/KeyboardCodes";
+import {IBlock, IFront, ILevel, IType} from "./Interfaces";
+import UnitsControl from "./UnitsControl";
 
 export default class LevelContainer extends View {
-	private static readonly UP:string = "ArrowUp";
-	private static readonly DOWN:string = "ArrowDown";
-	private static readonly LEFT:string = "ArrowLeft";
-	private static readonly RIGHT:string = "ArrowRight";
-	private static readonly BACKQUOTE:string = "Backquote";
 	private _pressedButtons:Map<string, boolean> = new Map<string, boolean>();
-	private _blocksHits:Graphics[] = [];
-	private _backSkins:Map<Graphics, Sprite> = new Map<Graphics, Sprite>();
-	private _frontSkins:Map<Graphics, Sprite> = new Map<Graphics, Sprite>();
-	private _blocks:Map<Graphics, IBlock> = new Map<Graphics, IBlock>();
+	private _blocks:IBlock[] = [];
 	private _blocksTypes:Map<string, IType> = new Map<string, IType>();
 	private _backContainer:Container;
+	private _hitsContainer:Container;
 	private _frontContainer:Container;
 	private _frontTexturesCache:Map<string, Texture> = new Map<string, Texture>();
 	private _level:ILevel;
+	private _unitsControl:UnitsControl;
 
 	// DEVELOP_MODE
-	private _draggedBlock:Graphics;
+	private _draggedBlock:IBlock;
 	private _draggedBlockShiftPoint:Point;
 
 	constructor(
@@ -58,10 +54,12 @@ export default class LevelContainer extends View {
 						loadedTypesImagesCounter++;
 						if (loadedTypesImagesCounter == typesNum) {
 							this.initBackContainer();
+							this.initHitsContainer();
 							this.initPlayer();
 							this.initFrontContainer();
 							this.initBlocks();
 							this.addKeyListeners();
+							this.initUnitsControl();
 							this.launchTicker();
 						}
 					});
@@ -72,6 +70,11 @@ export default class LevelContainer extends View {
 	private initBackContainer():void {
 		this._backContainer = new Container();
 		this.addChild(this._backContainer);
+	}
+
+	private initHitsContainer():void {
+		this._hitsContainer = new Container();
+		this.addChild(this._hitsContainer);
 	}
 
 	private initPlayer():void {
@@ -92,23 +95,23 @@ export default class LevelContainer extends View {
 	}
 
 	private initBlock(block:IBlock):void {
+		this._blocks.push(block);
+
 		const blockType:IType = this._blocksTypes.get(block.type);
-		const newBlockHit:Graphics = new Graphics();
-		newBlockHit.x = block.x;
-		newBlockHit.y = block.y;
-		newBlockHit.beginFill(0x000000, 1);
-		newBlockHit.drawRect(0, 0, blockType.hit.width, blockType.hit.height);
-		newBlockHit.endFill();
-		// newBlockHit.alpha = 0;
-		this.addChild(newBlockHit);
-		this._blocksHits.push(newBlockHit);
-		this._blocks.set(newBlockHit, block);
+		const blockHit:Graphics = new Graphics();
+		blockHit.x = block.x;
+		blockHit.y = block.y;
+		blockHit.beginFill(0x000000, 1);
+		blockHit.drawRect(0, 0, blockType.hit.width, blockType.hit.height);
+		blockHit.endFill();
+		this._hitsContainer.addChild(blockHit);
+		block.hit = blockHit;
 
 		const backSkin:Sprite = Sprite.from(blockType.image);
 		backSkin.x = block.x - blockType.hit.x;
 		backSkin.y = block.y - blockType.hit.y;
 		this._backContainer.addChild(backSkin);
-		this._backSkins.set(newBlockHit, backSkin);
+		block.backSkin = backSkin;
 
 		const front:IFront = blockType.front;
 		let frontTexture:Texture;
@@ -125,7 +128,7 @@ export default class LevelContainer extends View {
 		frontSkin.x = backSkin.x + blockType.front.x;
 		frontSkin.y = backSkin.y + blockType.front.y;
 		this._frontContainer.addChild(frontSkin);
-		this._frontSkins.set(newBlockHit, frontSkin);
+		block.frontSkin = frontSkin;
 	}
 
 	private addKeyListeners():void {
@@ -146,197 +149,142 @@ export default class LevelContainer extends View {
 		);
 	}
 
+	private initUnitsControl():void {
+		this._unitsControl = new UnitsControl(this._player);
+		this._blocks.forEach((block:IBlock) => {
+			this._unitsControl.addHit(block.hit);
+		});
+	}
+
 	private launchTicker():void {
 		Globals.pixiApp.ticker.add(() => {
 			this.jumping();
-			this.horizontalMoving();
-			this.verticalMoving();
+			this._unitsControl.refresh();
 		});
 	}
 
 	private jumping():void {
-		if (this._pressedButtons.get(LevelContainer.UP) && this._player.canJump) {
+		if (this._pressedButtons.get(KEY_UP) && this._player.canJump) {
 			this._player.canJump = false;
 			this._player.speedY = Player.JUMP_SPEED;
 		}
 	}
 
-	private horizontalMoving():void {
-		let canMove:boolean = true;
-		let limitX:number;
-		switch (this._player.getMovingDirection()) {
-			case Player.LEFT:
-				this._blocksHits.forEach((blockHit:Graphics) => {
-					limitX = blockHit.x + blockHit.width - this._player.collisionLeft();
-					if (
-						this._player.x >= limitX &&
-						this._player.x - Player.MOVING_SPEED < limitX &&
-						HitTest.vertical(this._player, blockHit)
-					) {
-						this._player.x = limitX;
-						canMove = false;
-					}
-				});
-				if (canMove) {
-					this._player.x -= Player.MOVING_SPEED;
-				}
-				break;
-
-			case Player.RIGHT:
-				this._blocksHits.forEach((blockHit:Graphics) => {
-					limitX = blockHit.x - this._player.collisionRight();
-					if (
-						this._player.x <= limitX &&
-						this._player.x + Player.MOVING_SPEED > limitX &&
-						HitTest.vertical(this._player, blockHit)
-					) {
-						this._player.x = limitX;
-						canMove = false;
-					}
-				});
-				if (canMove) {
-					this._player.x += Player.MOVING_SPEED;
-				}
-				break;
-		}
-	}
-
-	private verticalMoving():void {
-		let limitY:number;
-		this._player.speedY += Player.GRAVITY;
-		if (this._player.speedY > 0) {
-			this._blocksHits.forEach((blockHit:Graphics) => {
-				limitY = blockHit.y - this._player.collisionBottom();
-				if (
-					this._player.y <= limitY &&
-					this._player.y + this._player.speedY > limitY &&
-					HitTest.horizontal(this._player, blockHit)
-				) {
-					this._player.y = limitY;
-					this._player.canJump = true;
-					this._player.speedY = 0;
-				}
-			});
-			if (this._player.speedY !== 0) {
-				this._player.canJump = false;
-				this._player.y += this._player.speedY;
-			}
-		} else if (this._player.speedY < 0) {
-			this._blocksHits.forEach((blockHit:Graphics) => {
-				limitY = blockHit.y + blockHit.height - this._player.collisionTop();
-				if (
-					this._player.y >= limitY &&
-					this._player.y + this._player.speedY < limitY &&
-					HitTest.horizontal(this._player, blockHit)
-				) {
-					this._player.y = limitY;
-					this._player.speedY = 0;
-				}
-			});
-			if (this._player.speedY !== 0) {
-				this._player.y += this._player.speedY;
-			}
-		}
-	}
-
 	private keyDownHandler(e:KeyboardEvent):void {
 		switch (e.code) {
-			case LevelContainer.LEFT:
+			case KEY_LEFT:
 				if (!this._pressedButtons.get(e.code)) {
 					this._player.moveLeft();
 				}
 				break;
 
-			case LevelContainer.RIGHT:
+			case KEY_RIGHT:
 				if (!this._pressedButtons.get(e.code)) {
 					this._player.moveRight();
+				}
+				break;
+
+			case KEY_BACKQUOTE:
+				if (!process.env.RELEASE) {
+					Globals.developerMode.set(!Globals.developerMode.get());
+					this._hitsContainer.visible = Globals.developerMode.get();
+					this._frontContainer.alpha = Globals.developerMode.get() ? .3 : 1;
+					if (Globals.developerMode.get()) {
+						this.enableDeveloperMode();
+					} else {
+						this.disableDeveloperMode();
+					}
+					console.log("Developer mode is " + (Globals.developerMode.get() ? "ON" : "OFF"));
 				}
 				break;
 		}
 
 		switch (e.code) {
-			case LevelContainer.UP:
-			case LevelContainer.DOWN:
-			case LevelContainer.LEFT:
-			case LevelContainer.RIGHT:
+			case KEY_UP:
+			case KEY_DOWN:
+			case KEY_LEFT:
+			case KEY_RIGHT:
 				this._pressedButtons.set(e.code, true);
-		}
-
-		if (e.code === LevelContainer.BACKQUOTE && !process.env.RELEASE) {
-			Globals.developerMode.set(!Globals.developerMode.get());
-
-			if (Globals.developerMode.get()) {
-				this.enableDeveloperMode();
-			} else {
-				this.disableDeveloperMode();
-			}
-			console.log("Developer mode is " + (Globals.developerMode.get() ? "ON" : "OFF"));
 		}
 	}
 
 	private enableDeveloperMode():void {
-		this._blocksHits.forEach((blockHit:Graphics) => {
-			blockHit.interactive = true;
-			blockHit.addListener(POINTER_DOWN, this.blockPointerDownHandler, this);
+		this._blocks.forEach((block:IBlock) => {
+			const backSkin:Sprite = block.backSkin;
+			backSkin.interactive = true;
+			backSkin.addListener(
+				POINTER_DOWN,
+				(event:InteractionEvent) => {
+					this.blockPointerDownHandler(
+						block,
+						new Point(event.data.global.x, event.data.global.y)
+					);
+				},
+				this
+			);
 		});
 	}
 
-	private blockPointerDownHandler(event:InteractionEvent):void {
-		this._draggedBlock = event.currentTarget as Graphics;
-		this._draggedBlockShiftPoint = this._draggedBlock.toLocal(new Point(event.data.global.x, event.data.global.y));
-		this._draggedBlock.addListener(POINTER_MOVE, this.blockPointerMoveHandler, this);
-		this._draggedBlock.addListener(POINTER_UP, this.blockPointerUpHandler, this);
-		this._draggedBlock.addListener(POINTER_UP_OUTSIDE, this.blockPointerUpHandler, this);
+	private blockPointerDownHandler(block:IBlock, pointerDownPoint:Point):void {
+		this._draggedBlock = block;
+		this._draggedBlockShiftPoint = this._draggedBlock.backSkin.toLocal(pointerDownPoint);
+		const backSkin:Sprite = this._draggedBlock.backSkin;
+		backSkin.addListener(POINTER_MOVE, this.blockPointerMoveHandler, this);
+		backSkin.addListener(POINTER_UP, this.blockPointerUpHandler, this);
+		backSkin.addListener(POINTER_UP_OUTSIDE, this.blockPointerUpHandler, this);
 	}
 
 	private blockPointerMoveHandler(event:InteractionEvent):void {
 		const containerPoint:Point = this.toLocal(new Point(event.data.global.x, event.data.global.y));
-		this._draggedBlock.x = Math.round(containerPoint.x - this._draggedBlockShiftPoint.x);
-		this._draggedBlock.y = Math.round(containerPoint.y - this._draggedBlockShiftPoint.y);
+		const backSkin:Sprite = this._draggedBlock.backSkin;
+		backSkin.x = Math.round(containerPoint.x - this._draggedBlockShiftPoint.x);
+		backSkin.y = Math.round(containerPoint.y - this._draggedBlockShiftPoint.y);
 
-		const blockType:IType = this._blocksTypes.get(this._blocks.get(this._draggedBlock).type);
+		const blockType:IType = this._blocksTypes.get(this._draggedBlock.type);
 
-		const backSkin:Sprite = this._backSkins.get(this._draggedBlock);
-		backSkin.x = this._draggedBlock.x - blockType.hit.x;
-		backSkin.y = this._draggedBlock.y - blockType.hit.y;
+		const hit:Graphics = this._draggedBlock.hit;
+		hit.x = backSkin.x + blockType.hit.x;
+		hit.y = backSkin.y + blockType.hit.y;
 
-		const frontSkin:Sprite = this._frontSkins.get(this._draggedBlock);
+		const frontSkin:Sprite = this._draggedBlock.frontSkin;
 		frontSkin.x = backSkin.x + blockType.front.x;
 		frontSkin.y = backSkin.y + blockType.front.y;
 	}
 
 	private blockPointerUpHandler():void {
-		this._draggedBlock.removeAllListeners(POINTER_MOVE);
-		this._draggedBlock.removeAllListeners(POINTER_UP);
-		this._draggedBlock.removeAllListeners(POINTER_UP_OUTSIDE);
+		const backSkin:Sprite = this._draggedBlock.backSkin;
+		backSkin.removeAllListeners(POINTER_MOVE);
+		backSkin.removeAllListeners(POINTER_UP);
+		backSkin.removeAllListeners(POINTER_UP_OUTSIDE);
 		this._draggedBlock = null;
 	}
 
 	private disableDeveloperMode():void {
-		this._blocksHits.forEach((blockHit:Graphics) => {
-			blockHit.interactive = false;
-			blockHit.removeAllListeners(POINTER_DOWN);
-			blockHit.removeAllListeners(POINTER_UP);
-			blockHit.removeAllListeners(POINTER_UP_OUTSIDE);
+		this._blocks.forEach((block:IBlock) => {
+			const backSkin:Sprite = block.backSkin;
+			backSkin.interactive = false;
+			backSkin.removeAllListeners(POINTER_DOWN);
+			backSkin.removeAllListeners(POINTER_UP);
+			backSkin.removeAllListeners(POINTER_UP_OUTSIDE);
 		});
 
 		if (this._draggedBlock) {
-			this._draggedBlock.removeAllListeners(POINTER_MOVE);
+			this._draggedBlock.backSkin.removeAllListeners(POINTER_MOVE);
 		}
 	}
 
 	private keyUpHandler(e:KeyboardEvent):void {
 		switch (e.code) {
-			case LevelContainer.LEFT:
-				if (this._pressedButtons.get(LevelContainer.RIGHT)) {
+			case KEY_LEFT:
+				if (this._pressedButtons.get(KEY_RIGHT)) {
 					this._player.moveRight();
 				} else {
 					this._player.stop();
 				}
 				break;
 
-			case LevelContainer.RIGHT:
-				if (this._pressedButtons.get(LevelContainer.LEFT)) {
+			case KEY_RIGHT:
+				if (this._pressedButtons.get(KEY_LEFT)) {
 					this._player.moveLeft();
 				} else {
 					this._player.stop();
@@ -345,43 +293,11 @@ export default class LevelContainer extends View {
 		}
 
 		switch (e.code) {
-			case LevelContainer.UP:
-			case LevelContainer.DOWN:
-			case LevelContainer.LEFT:
-			case LevelContainer.RIGHT:
+			case KEY_UP:
+			case KEY_DOWN:
+			case KEY_LEFT:
+			case KEY_RIGHT:
 				this._pressedButtons.set(e.code, false);
 		}
 	}
-}
-
-interface ILevel {
-	types:IType[];
-	blocks:IBlock[];
-}
-
-interface IType {
-	id:string;
-	image:string;
-	hit:IHit;
-	front:IFront;
-}
-
-interface IHit {
-	x:number;
-	y:number;
-	width:number;
-	height:number;
-}
-
-interface IFront {
-	x:number;
-	y:number;
-	width:number;
-	height:number;
-}
-
-interface IBlock {
-	type:string;
-	x:number;
-	y:number;
 }

@@ -1,6 +1,6 @@
 import Container = PIXI.Container;
 import Graphics = PIXI.Graphics;
-import Random from "./Random";
+import Random from "./utils/Random";
 
 class View extends Container {
 	constructor() {
