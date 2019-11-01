@@ -35,7 +35,7 @@ export default class MainContainer extends View {
 	private initLevelContainer():void {
 		this._levelContainer = new LevelContainer(
 			this._player,
-			"levels/level_1.json"
+			"levels/level_2.json"
 		);
 		this._levelContainer.setSize(2000, 2000);
 		this.addChild(this._levelContainer);

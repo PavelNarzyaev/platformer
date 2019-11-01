@@ -10,7 +10,7 @@ import {addEvent, default as Globals} from "./Globals";
 import {POINTER_DOWN, POINTER_MOVE, POINTER_UP, POINTER_UP_OUTSIDE} from "./consts/PointerEvents";
 import InteractionEvent = PIXI.interaction.InteractionEvent;
 import Point = PIXI.Point;
-import {KEY_BACKQUOTE, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_UP} from "./consts/KeyboardCodes";
+import {KEY_BACKQUOTE, KEY_DOWN, KEY_J, KEY_LEFT, KEY_RIGHT, KEY_UP} from "./consts/KeyboardCodes";
 import {IBlock, IFront, ILevel, IType} from "./Interfaces";
 import UnitsControl from "./UnitsControl";
 
@@ -196,6 +196,26 @@ export default class LevelContainer extends View {
 					}
 					console.log("Developer mode is " + (Globals.developerMode.get() ? "ON" : "OFF"));
 				}
+				break;
+
+			case KEY_J:
+				let json:string = '';
+				this._blocks.forEach((block:IBlock) => {
+					if (json === "") {
+						/* tslint:disable */
+						json = '{"types":[{"id":"sand","image":"img/sandBlock.png","hit": {"x":31,"y":15,"width":138,"height":138},"front": {"x":0,"y":15,"width":169,"height":156}}],"blocks":[';
+						/* tslint:enable */
+					} else {
+						json += ',';
+					}
+					json += '{';
+					json += '"type":"sand",'
+					json += '"x":' + block.hit.x + ',';
+					json += '"y":' + block.hit.y;
+					json += '}'
+				});
+				json += ']}';
+				console.log(json);
 				break;
 		}
 
