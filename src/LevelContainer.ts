@@ -1,7 +1,5 @@
 import Player from "./Player";
-import Graphics = PIXI.Graphics;
 import {View} from "./View";
-import Sprite = PIXI.Sprite;
 import {pixiLoading, xhrJsonLoading} from "./Promises";
 import {addEvent, default as Globals} from "./Globals";
 import {POINTER_DOWN, POINTER_MOVE, POINTER_UP, POINTER_UP_OUTSIDE} from "./consts/PointerEvents";
@@ -10,14 +8,14 @@ import Point = PIXI.Point;
 import {KEY_BACKQUOTE, KEY_DOWN, KEY_J, KEY_LEFT, KEY_RIGHT, KEY_UP} from "./consts/KeyboardCodes";
 import {IBlock, ILevel, IType} from "./Interfaces";
 import UnitsControl from "./UnitsControl";
+import Block from "./Block";
 
 export default class LevelContainer extends View {
 	private _pressedButtons:Map<string, boolean> = new Map<string, boolean>();
 	private _levelData:ILevel;
-	private _blocksData:IBlock[] = [];
 	private _blocksTypesData:Map<string, IType> = new Map<string, IType>();
 	private _unitsControl:UnitsControl;
-	private _draggedBlockData:IBlock;
+	private _blocks:Block[] = [];
 
 	constructor(
 		private _player:Player,
@@ -67,23 +65,12 @@ export default class LevelContainer extends View {
 	}
 
 	private initBlock(blockData:IBlock):void {
-		this._blocksData.push(blockData);
-
 		const blockTypeData:IType = this._blocksTypesData.get(blockData.type);
-		const blockHit:Graphics = new Graphics();
-		blockHit.x = blockData.x;
-		blockHit.y = blockData.y;
-		blockHit.beginFill(0x000000, 0);
-		blockHit.drawRect(0, 0, blockTypeData.hit.width, blockTypeData.hit.height);
-		blockHit.endFill();
-		this.addChild(blockHit);
-		blockData.hit = blockHit;
-
-		const backSkin:Sprite = Sprite.from(blockTypeData.image);
-		backSkin.x = blockData.x - blockTypeData.hit.x;
-		backSkin.y = blockData.y - blockTypeData.hit.y;
-		this.addChild(backSkin);
-		blockData.backSkin = backSkin;
+		const block:Block = new Block(blockData, blockTypeData);
+		block.x = blockData.x - blockTypeData.hit.x;
+		block.y = blockData.y - blockTypeData.hit.y;
+		this.addChild(block);
+		this._blocks.push(block);
 	}
 
 	private addKeyListeners():void {
@@ -105,10 +92,7 @@ export default class LevelContainer extends View {
 	}
 
 	private initUnitsControl():void {
-		this._unitsControl = new UnitsControl(this._player);
-		this._blocksData.forEach((blockData:IBlock) => {
-			this._unitsControl.addHit(blockData.hit);
-		});
+		this._unitsControl = new UnitsControl(this._player, this._blocks);
 	}
 
 	private launchTicker():void {
@@ -153,7 +137,8 @@ export default class LevelContainer extends View {
 
 			case KEY_J:
 				let json:string = '';
-				this._blocksData.forEach((blockData:IBlock) => {
+				this._blocks.forEach((block:Block) => {
+					const blockData:IBlock = block.getData();
 					if (json === "") {
 						/* tslint:disable */
 						json = '{"types":[{"id":"sand","image":"img/sandBlock.png","hit": {"x":31,"y":15,"width":138,"height":138},"blocks":[';
@@ -182,64 +167,40 @@ export default class LevelContainer extends View {
 	}
 
 	private enableDeveloperMode():void {
-		this._blocksData.forEach((blockData:IBlock) => {
-			const backSkin:Sprite = blockData.backSkin;
-			backSkin.interactive = true;
-			backSkin.addListener(
-				POINTER_DOWN,
-				(event:InteractionEvent) => {
-					this.blockPointerDownHandler(
-						blockData,
-						new Point(event.data.global.x, event.data.global.y)
-					);
-				},
-				this
-			);
+		this._blocks.forEach((block:Block) => {
+			block.interactive = true;
+			block.addListener(POINTER_DOWN, this.blockPointerDownHandler, this);
 		});
 	}
 
-	private blockPointerDownHandler(blockData:IBlock, pointerDownPoint:Point):void {
-		this._draggedBlockData = blockData;
-		this._draggedBlockData.localDragPoint = this._draggedBlockData.backSkin.toLocal(pointerDownPoint);
-		const backSkin:Sprite = this._draggedBlockData.backSkin;
-		backSkin.addListener(POINTER_MOVE, this.blockPointerMoveHandler, this);
-		backSkin.addListener(POINTER_UP, this.blockPointerUpHandler, this);
-		backSkin.addListener(POINTER_UP_OUTSIDE, this.blockPointerUpHandler, this);
+	private blockPointerDownHandler(event:InteractionEvent):void {
+		const currentBlock:Block = (event.currentTarget as Block);
+		const pointerDownPoint:Point = new Point(event.data.global.x, event.data.global.y);
+		currentBlock.localDragPoint = currentBlock.toLocal(pointerDownPoint);
+		currentBlock.addListener(POINTER_MOVE, this.blockPointerMoveHandler, this);
+		currentBlock.addListener(POINTER_UP, this.blockPointerUpHandler, this);
+		currentBlock.addListener(POINTER_UP_OUTSIDE, this.blockPointerUpHandler, this);
 	}
 
 	private blockPointerMoveHandler(event:InteractionEvent):void {
+		const currentBlock:Block = (event.currentTarget as Block);
 		const containerDragPoint:Point = this.toLocal(new Point(event.data.global.x, event.data.global.y));
-		const backSkin:Sprite = this._draggedBlockData.backSkin;
-		backSkin.x = Math.round(containerDragPoint.x - this._draggedBlockData.localDragPoint.x);
-		backSkin.y = Math.round(containerDragPoint.y - this._draggedBlockData.localDragPoint.y);
-
-		const blockTypeData:IType = this._blocksTypesData.get(this._draggedBlockData.type);
-
-		const hit:Graphics = this._draggedBlockData.hit;
-		hit.x = backSkin.x + blockTypeData.hit.x;
-		hit.y = backSkin.y + blockTypeData.hit.y;
+		currentBlock.x = Math.round(containerDragPoint.x - currentBlock.localDragPoint.x);
+		currentBlock.y = Math.round(containerDragPoint.y - currentBlock.localDragPoint.y);
 	}
 
-	private blockPointerUpHandler():void {
-		const backSkin:Sprite = this._draggedBlockData.backSkin;
-		backSkin.removeAllListeners(POINTER_MOVE);
-		backSkin.removeAllListeners(POINTER_UP);
-		backSkin.removeAllListeners(POINTER_UP_OUTSIDE);
-		this._draggedBlockData = null;
+	private blockPointerUpHandler(event:InteractionEvent):void {
+		const currentBlock:Block = (event.currentTarget as Block);
+		currentBlock.removeAllListeners(POINTER_MOVE);
+		currentBlock.removeAllListeners(POINTER_UP);
+		currentBlock.removeAllListeners(POINTER_UP_OUTSIDE);
 	}
 
 	private disableDeveloperMode():void {
-		this._blocksData.forEach((blockData:IBlock) => {
-			const backSkin:Sprite = blockData.backSkin;
-			backSkin.interactive = false;
-			backSkin.removeAllListeners(POINTER_DOWN);
-			backSkin.removeAllListeners(POINTER_UP);
-			backSkin.removeAllListeners(POINTER_UP_OUTSIDE);
+		this._blocks.forEach((block:Block) => {
+			block.interactive = false;
+			block.removeAllListeners();
 		});
-
-		if (this._draggedBlockData) {
-			this._draggedBlockData.backSkin.removeAllListeners(POINTER_MOVE);
-		}
 	}
 
 	private keyUpHandler(e:KeyboardEvent):void {

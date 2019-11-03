@@ -1,17 +1,13 @@
 import Player from "./Player";
 import {IHit} from "./Interfaces";
 import HitTest from "./utils/HitTest";
+import Block from "./Block";
 
 export default class UnitsControl {
-	private _hitsData:IHit[] = [];
-
 	constructor(
 		private _player:Player,
+		private _blocks:Block[],
 	) {
-	}
-
-	public addHit(hitData:IHit):void {
-		this._hitsData.push(hitData);
 	}
 
 	public refresh():void {
@@ -24,12 +20,12 @@ export default class UnitsControl {
 		let limitX:number;
 		switch (this._player.getMovingDirection()) {
 			case Player.LEFT:
-				this._hitsData.forEach((hitData:IHit) => {
-					limitX = hitData.x + hitData.width - this._player.collisionLeft();
+				this._blocks.forEach((block:Block) => {
+					limitX = block.x + block.collisionRight() - this._player.collisionLeft();
 					if (
 						this._player.x >= limitX &&
 						this._player.x - Player.MOVING_SPEED < limitX &&
-						HitTest.vertical(this._player, hitData)
+						HitTest.vertical(this._player, block)
 					) {
 						this._player.x = limitX;
 						canMove = false;
@@ -41,12 +37,12 @@ export default class UnitsControl {
 				break;
 
 			case Player.RIGHT:
-				this._hitsData.forEach((hitData:IHit) => {
-					limitX = hitData.x - this._player.collisionRight();
+				this._blocks.forEach((block:Block) => {
+					limitX = block.x + block.collisionLeft() - this._player.collisionRight();
 					if (
 						this._player.x <= limitX &&
 						this._player.x + Player.MOVING_SPEED > limitX &&
-						HitTest.vertical(this._player, hitData)
+						HitTest.vertical(this._player, block)
 					) {
 						this._player.x = limitX;
 						canMove = false;
@@ -63,12 +59,12 @@ export default class UnitsControl {
 		let limitY:number;
 		this._player.speedY += Player.GRAVITY;
 		if (this._player.speedY > 0) {
-			this._hitsData.forEach((hitData:IHit) => {
-				limitY = hitData.y - this._player.collisionBottom();
+			this._blocks.forEach((block:Block) => {
+				limitY = block.y + block.collisionTop() - this._player.collisionBottom();
 				if (
 					this._player.y <= limitY &&
 					this._player.y + this._player.speedY > limitY &&
-					HitTest.horizontal(this._player, hitData)
+					HitTest.horizontal(this._player, block)
 				) {
 					this._player.y = limitY;
 					this._player.canJump = true;
@@ -80,12 +76,12 @@ export default class UnitsControl {
 				this._player.y += this._player.speedY;
 			}
 		} else if (this._player.speedY < 0) {
-			this._hitsData.forEach((hitData:IHit) => {
-				limitY = hitData.y + hitData.height - this._player.collisionTop();
+			this._blocks.forEach((block:Block) => {
+				limitY = block.y + block.collisionBottom() - this._player.collisionTop();
 				if (
 					this._player.y >= limitY &&
 					this._player.y + this._player.speedY < limitY &&
-					HitTest.horizontal(this._player, hitData)
+					HitTest.horizontal(this._player, block)
 				) {
 					this._player.y = limitY;
 					this._player.speedY = 0;
