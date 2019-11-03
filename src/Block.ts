@@ -21,6 +21,10 @@ export default class Block extends CollisionObject {
 		return this._blockData;
 	}
 
+	public getTypeData():IType {
+		return this._blockTypeData;
+	}
+
 	public collisionLeft():number {
 		return this._blockTypeData.hit.x;
 	}

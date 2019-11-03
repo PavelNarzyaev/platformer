@@ -24,8 +24,4 @@ export interface IBlock {
 	type:string;
 	x:number;
 	y:number;
-	backSkin?:Sprite;
-	hit?:Graphics;
-	frontSkin?:Sprite;
-	localDragPoint?:Point;
 }

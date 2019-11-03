@@ -136,24 +136,25 @@ export default class LevelContainer extends View {
 				break;
 
 			case KEY_J:
-				let json:string = '';
+				const addedTypes:Set<string> = new Set<string>();
+				const typesData:IType[] = [];
+				const blocksData:IBlock[] = [];
 				this._blocks.forEach((block:Block) => {
-					const blockData:IBlock = block.getData();
-					if (json === "") {
-						/* tslint:disable */
-						json = '{"types":[{"id":"sand","image":"img/sandBlock.png","hit": {"x":31,"y":15,"width":138,"height":138},"blocks":[';
-						/* tslint:enable */
-					} else {
-						json += ',';
+					if (!addedTypes.has(block.getTypeData().id)) {
+						typesData.push(block.getTypeData());
+						addedTypes.add(block.getTypeData().id);
 					}
-					json += '{';
-					json += '"type":"sand",';
-					json += '"x":' + blockData.hit.x + ',';
-					json += '"y":' + blockData.hit.y;
-					json += '}'
+					blocksData.push({
+						...block.getData(),
+						x: block.x + block.getTypeData().hit.x,
+						y: block.y + block.getTypeData().hit.y,
+					});
 				});
-				json += ']}';
-				console.log(json);
+				const levelData:ILevel = {
+					types:typesData,
+					blocks:blocksData,
+				};
+				console.log(JSON.stringify(levelData));
 				break;
 		}
 
