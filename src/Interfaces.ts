@@ -1,5 +1,6 @@
 import Sprite = PIXI.Sprite;
 import Graphics = PIXI.Graphics;
+import Point = PIXI.Point;
 
 export interface ILevel {
 	types:IType[];
@@ -10,17 +11,9 @@ export interface IType {
 	id:string;
 	image:string;
 	hit:IHit;
-	front:IFront;
 }
 
 export interface IHit {
-	x:number;
-	y:number;
-	width:number;
-	height:number;
-}
-
-export interface IFront {
 	x:number;
 	y:number;
 	width:number;
@@ -34,4 +27,5 @@ export interface IBlock {
 	backSkin?:Sprite;
 	hit?:Graphics;
 	frontSkin?:Sprite;
+	localDragPoint?:Point;
 }

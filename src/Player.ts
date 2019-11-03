@@ -77,6 +77,6 @@ export default class Player extends CollisionObject {
 	}
 
 	public collisionBottom():number {
-		return 100;
+		return 90;
 	}
 }
