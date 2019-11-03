@@ -2,7 +2,6 @@ import Player from "./Player";
 import Graphics = PIXI.Graphics;
 import {View} from "./View";
 import Sprite = PIXI.Sprite;
-import Container = PIXI.Container;
 import {pixiLoading, xhrJsonLoading} from "./Promises";
 import {addEvent, default as Globals} from "./Globals";
 import {POINTER_DOWN, POINTER_MOVE, POINTER_UP, POINTER_UP_OUTSIDE} from "./consts/PointerEvents";
@@ -16,8 +15,6 @@ export default class LevelContainer extends View {
 	private _pressedButtons:Map<string, boolean> = new Map<string, boolean>();
 	private _blocks:IBlock[] = [];
 	private _blocksTypes:Map<string, IType> = new Map<string, IType>();
-	private _backContainer:Container;
-	private _hitsContainer:Container;
 	private _level:ILevel;
 	private _unitsControl:UnitsControl;
 	private _draggedBlock:IBlock;
@@ -46,10 +43,8 @@ export default class LevelContainer extends View {
 						this._blocksTypes.set(type.id, type);
 						loadedTypesImagesCounter++;
 						if (loadedTypesImagesCounter == typesNum) {
-							this.initBackContainer();
-							this.initHitsContainer();
-							this.initPlayer();
 							this.initBlocks();
+							this.initPlayer();
 							this.addKeyListeners();
 							this.initUnitsControl();
 							this.launchTicker();
@@ -57,21 +52,6 @@ export default class LevelContainer extends View {
 					});
 				});
 			});
-	}
-
-	private initBackContainer():void {
-		this._backContainer = new Container();
-		this.addChild(this._backContainer);
-	}
-
-	private initHitsContainer():void {
-		this._hitsContainer = new Container();
-		this.addChild(this._hitsContainer);
-		this.refreshHitsContainerVisibility();
-	}
-
-	private refreshHitsContainerVisibility():void {
-		this._hitsContainer.visible = Globals.developerMode.get();
 	}
 
 	private initPlayer():void {
@@ -93,16 +73,16 @@ export default class LevelContainer extends View {
 		const blockHit:Graphics = new Graphics();
 		blockHit.x = block.x;
 		blockHit.y = block.y;
-		blockHit.beginFill(0x000000, 1);
+		blockHit.beginFill(0x000000, 0);
 		blockHit.drawRect(0, 0, blockType.hit.width, blockType.hit.height);
 		blockHit.endFill();
-		this._hitsContainer.addChild(blockHit);
+		this.addChild(blockHit);
 		block.hit = blockHit;
 
 		const backSkin:Sprite = Sprite.from(blockType.image);
 		backSkin.x = block.x - blockType.hit.x;
 		backSkin.y = block.y - blockType.hit.y;
-		this._backContainer.addChild(backSkin);
+		this.addChild(backSkin);
 		block.backSkin = backSkin;
 	}
 
@@ -162,7 +142,6 @@ export default class LevelContainer extends View {
 			case KEY_BACKQUOTE:
 				if (!process.env.RELEASE) {
 					Globals.developerMode.set(!Globals.developerMode.get());
-					this.refreshHitsContainerVisibility();
 					if (Globals.developerMode.get()) {
 						this.enableDeveloperMode();
 					} else {
