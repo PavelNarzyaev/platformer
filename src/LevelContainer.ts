@@ -13,11 +13,11 @@ import UnitsControl from "./UnitsControl";
 
 export default class LevelContainer extends View {
 	private _pressedButtons:Map<string, boolean> = new Map<string, boolean>();
-	private _blocks:IBlock[] = [];
-	private _blocksTypes:Map<string, IType> = new Map<string, IType>();
-	private _level:ILevel;
+	private _levelData:ILevel;
+	private _blocksData:IBlock[] = [];
+	private _blocksTypesData:Map<string, IType> = new Map<string, IType>();
 	private _unitsControl:UnitsControl;
-	private _draggedBlock:IBlock;
+	private _draggedBlockData:IBlock;
 
 	constructor(
 		private _player:Player,
@@ -36,11 +36,11 @@ export default class LevelContainer extends View {
 		let loadedTypesImagesCounter:number = 0;
 		xhrJsonLoading(this._levelUrl)
 			.then((level:ILevel) => {
-				this._level = level;
-				typesNum = this._level.types.length;
-				this._level.types.forEach((type:IType) => {
-					pixiLoading(type.image).then(() => {
-						this._blocksTypes.set(type.id, type);
+				this._levelData = level;
+				typesNum = this._levelData.types.length;
+				this._levelData.types.forEach((typeData:IType) => {
+					pixiLoading(typeData.image).then(() => {
+						this._blocksTypesData.set(typeData.id, typeData);
 						loadedTypesImagesCounter++;
 						if (loadedTypesImagesCounter == typesNum) {
 							this.initBlocks();
@@ -61,29 +61,29 @@ export default class LevelContainer extends View {
 	}
 
 	private initBlocks():void {
-		this._level.blocks.forEach((block:IBlock) => {
-			this.initBlock(block);
+		this._levelData.blocks.forEach((blockData:IBlock) => {
+			this.initBlock(blockData);
 		});
 	}
 
-	private initBlock(block:IBlock):void {
-		this._blocks.push(block);
+	private initBlock(blockData:IBlock):void {
+		this._blocksData.push(blockData);
 
-		const blockType:IType = this._blocksTypes.get(block.type);
+		const blockTypeData:IType = this._blocksTypesData.get(blockData.type);
 		const blockHit:Graphics = new Graphics();
-		blockHit.x = block.x;
-		blockHit.y = block.y;
+		blockHit.x = blockData.x;
+		blockHit.y = blockData.y;
 		blockHit.beginFill(0x000000, 0);
-		blockHit.drawRect(0, 0, blockType.hit.width, blockType.hit.height);
+		blockHit.drawRect(0, 0, blockTypeData.hit.width, blockTypeData.hit.height);
 		blockHit.endFill();
 		this.addChild(blockHit);
-		block.hit = blockHit;
+		blockData.hit = blockHit;
 
-		const backSkin:Sprite = Sprite.from(blockType.image);
-		backSkin.x = block.x - blockType.hit.x;
-		backSkin.y = block.y - blockType.hit.y;
+		const backSkin:Sprite = Sprite.from(blockTypeData.image);
+		backSkin.x = blockData.x - blockTypeData.hit.x;
+		backSkin.y = blockData.y - blockTypeData.hit.y;
 		this.addChild(backSkin);
-		block.backSkin = backSkin;
+		blockData.backSkin = backSkin;
 	}
 
 	private addKeyListeners():void {
@@ -106,8 +106,8 @@ export default class LevelContainer extends View {
 
 	private initUnitsControl():void {
 		this._unitsControl = new UnitsControl(this._player);
-		this._blocks.forEach((block:IBlock) => {
-			this._unitsControl.addHit(block.hit);
+		this._blocksData.forEach((blockData:IBlock) => {
+			this._unitsControl.addHit(blockData.hit);
 		});
 	}
 
@@ -153,7 +153,7 @@ export default class LevelContainer extends View {
 
 			case KEY_J:
 				let json:string = '';
-				this._blocks.forEach((block:IBlock) => {
+				this._blocksData.forEach((blockData:IBlock) => {
 					if (json === "") {
 						/* tslint:disable */
 						json = '{"types":[{"id":"sand","image":"img/sandBlock.png","hit": {"x":31,"y":15,"width":138,"height":138},"blocks":[';
@@ -163,8 +163,8 @@ export default class LevelContainer extends View {
 					}
 					json += '{';
 					json += '"type":"sand",';
-					json += '"x":' + block.hit.x + ',';
-					json += '"y":' + block.hit.y;
+					json += '"x":' + blockData.hit.x + ',';
+					json += '"y":' + blockData.hit.y;
 					json += '}'
 				});
 				json += ']}';
@@ -182,14 +182,14 @@ export default class LevelContainer extends View {
 	}
 
 	private enableDeveloperMode():void {
-		this._blocks.forEach((block:IBlock) => {
-			const backSkin:Sprite = block.backSkin;
+		this._blocksData.forEach((blockData:IBlock) => {
+			const backSkin:Sprite = blockData.backSkin;
 			backSkin.interactive = true;
 			backSkin.addListener(
 				POINTER_DOWN,
 				(event:InteractionEvent) => {
 					this.blockPointerDownHandler(
-						block,
+						blockData,
 						new Point(event.data.global.x, event.data.global.y)
 					);
 				},
@@ -198,10 +198,10 @@ export default class LevelContainer extends View {
 		});
 	}
 
-	private blockPointerDownHandler(block:IBlock, pointerDownPoint:Point):void {
-		this._draggedBlock = block;
-		this._draggedBlock.localDragPoint = this._draggedBlock.backSkin.toLocal(pointerDownPoint);
-		const backSkin:Sprite = this._draggedBlock.backSkin;
+	private blockPointerDownHandler(blockData:IBlock, pointerDownPoint:Point):void {
+		this._draggedBlockData = blockData;
+		this._draggedBlockData.localDragPoint = this._draggedBlockData.backSkin.toLocal(pointerDownPoint);
+		const backSkin:Sprite = this._draggedBlockData.backSkin;
 		backSkin.addListener(POINTER_MOVE, this.blockPointerMoveHandler, this);
 		backSkin.addListener(POINTER_UP, this.blockPointerUpHandler, this);
 		backSkin.addListener(POINTER_UP_OUTSIDE, this.blockPointerUpHandler, this);
@@ -209,36 +209,36 @@ export default class LevelContainer extends View {
 
 	private blockPointerMoveHandler(event:InteractionEvent):void {
 		const containerDragPoint:Point = this.toLocal(new Point(event.data.global.x, event.data.global.y));
-		const backSkin:Sprite = this._draggedBlock.backSkin;
-		backSkin.x = Math.round(containerDragPoint.x - this._draggedBlock.localDragPoint.x);
-		backSkin.y = Math.round(containerDragPoint.y - this._draggedBlock.localDragPoint.y);
+		const backSkin:Sprite = this._draggedBlockData.backSkin;
+		backSkin.x = Math.round(containerDragPoint.x - this._draggedBlockData.localDragPoint.x);
+		backSkin.y = Math.round(containerDragPoint.y - this._draggedBlockData.localDragPoint.y);
 
-		const blockType:IType = this._blocksTypes.get(this._draggedBlock.type);
+		const blockTypeData:IType = this._blocksTypesData.get(this._draggedBlockData.type);
 
-		const hit:Graphics = this._draggedBlock.hit;
-		hit.x = backSkin.x + blockType.hit.x;
-		hit.y = backSkin.y + blockType.hit.y;
+		const hit:Graphics = this._draggedBlockData.hit;
+		hit.x = backSkin.x + blockTypeData.hit.x;
+		hit.y = backSkin.y + blockTypeData.hit.y;
 	}
 
 	private blockPointerUpHandler():void {
-		const backSkin:Sprite = this._draggedBlock.backSkin;
+		const backSkin:Sprite = this._draggedBlockData.backSkin;
 		backSkin.removeAllListeners(POINTER_MOVE);
 		backSkin.removeAllListeners(POINTER_UP);
 		backSkin.removeAllListeners(POINTER_UP_OUTSIDE);
-		this._draggedBlock = null;
+		this._draggedBlockData = null;
 	}
 
 	private disableDeveloperMode():void {
-		this._blocks.forEach((block:IBlock) => {
-			const backSkin:Sprite = block.backSkin;
+		this._blocksData.forEach((blockData:IBlock) => {
+			const backSkin:Sprite = blockData.backSkin;
 			backSkin.interactive = false;
 			backSkin.removeAllListeners(POINTER_DOWN);
 			backSkin.removeAllListeners(POINTER_UP);
 			backSkin.removeAllListeners(POINTER_UP_OUTSIDE);
 		});
 
-		if (this._draggedBlock) {
-			this._draggedBlock.backSkin.removeAllListeners(POINTER_MOVE);
+		if (this._draggedBlockData) {
+			this._draggedBlockData.backSkin.removeAllListeners(POINTER_MOVE);
 		}
 	}
 
