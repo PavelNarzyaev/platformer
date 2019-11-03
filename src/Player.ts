@@ -1,11 +1,9 @@
-import Container = PIXI.Container;
 import Sprite = PIXI.Sprite;
-import Rectangle = PIXI.Rectangle;
-import Texture = PIXI.Texture;
 import CollisionObject from "./CollisionObject";
 
 export default class Player extends CollisionObject {
-	public static readonly SKIN_NAME:string = "img/alien.png";
+	public static readonly LEFT_SKIN_NAME:string = "img/player_left.png";
+	public static readonly RIGHT_SKIN_NAME:string = "img/player_right.png";
 	public static readonly GRAVITY:number = 0.15;
 	public static readonly JUMP_SPEED:number = -8;
 	public static readonly MOVING_SPEED:number = 4;
@@ -16,29 +14,17 @@ export default class Player extends CollisionObject {
 	public canJump:boolean = true;
 
 	private _skin:Sprite;
-	private _skinFlipContainer:Container;
 	private _movingDirection:symbol = null;
 	private _skinDirection:symbol = Player.RIGHT;
 
 	constructor() {
 		super();
-		this.initSkinFlipContainer();
 		this.initSkin();
 	}
 
-	private initSkinFlipContainer():void {
-		this._skinFlipContainer = new Container();
-		this.addChild(this._skinFlipContainer);
-	}
-
 	private initSkin():void {
-		this._skin = new Sprite(
-			new Texture(
-				Texture.from(Player.SKIN_NAME).baseTexture,
-				new Rectangle(0, 0, 358, 147)
-			)
-		);
-		this._skinFlipContainer.addChild(this._skin);
+		this._skin = Sprite.fromImage(Player.RIGHT_SKIN_NAME);
+		this.addChild(this._skin);
 	}
 
 	public moveLeft():void {
@@ -60,13 +46,15 @@ export default class Player extends CollisionObject {
 			this._skinDirection = this._movingDirection;
 			switch (this._skinDirection) {
 				case Player.LEFT:
-					this._skinFlipContainer.scale.x = -1;
-					this._skinFlipContainer.x = this._skin.width;
+					this.removeChild(this._skin);
+					this._skin = Sprite.fromImage(Player.LEFT_SKIN_NAME);
+					this.addChild(this._skin);
 					break;
 
 				case Player.RIGHT:
-					this._skinFlipContainer.scale.x = 1;
-					this._skinFlipContainer.x = 0;
+					this.removeChild(this._skin);
+					this._skin = Sprite.fromImage(Player.RIGHT_SKIN_NAME);
+					this.addChild(this._skin);
 					break;
 			}
 		}
@@ -77,18 +65,18 @@ export default class Player extends CollisionObject {
 	}
 
 	public collisionLeft():number {
-		return 110;
+		return 10;
 	}
 
 	public collisionRight():number {
-		return 250;
+		return 40;
 	}
 
 	public collisionTop():number {
-		return 30;
+		return 10;
 	}
 
 	public collisionBottom():number {
-		return 130;
+		return 100;
 	}
 }

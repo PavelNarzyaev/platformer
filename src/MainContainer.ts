@@ -18,8 +18,13 @@ export default class MainContainer extends View {
 	}
 
 	private loading():void {
-		pixiLoading(Player.SKIN_NAME)
-			.then(() => { this.completeLoadingHandler(); });
+		pixiLoading(Player.LEFT_SKIN_NAME)
+			.then(() => {
+				pixiLoading(Player.RIGHT_SKIN_NAME)
+					.then(() => {
+						this.completeLoadingHandler()
+					})
+			});
 	}
 
 	private completeLoadingHandler():void {
