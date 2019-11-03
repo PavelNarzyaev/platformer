@@ -67,8 +67,8 @@ export default class LevelContainer extends View {
 	private initBlock(blockData:IBlock):void {
 		const blockTypeData:IType = this._blocksTypesData.get(blockData.type);
 		const block:Block = new Block(blockData, blockTypeData);
-		block.x = blockData.x - blockTypeData.hit.x;
-		block.y = blockData.y - blockTypeData.hit.y;
+		block.x = blockData.x - blockTypeData.collision.left;
+		block.y = blockData.y - blockTypeData.collision.top;
 		this.addChild(block);
 		this._blocks.push(block);
 	}
@@ -146,8 +146,8 @@ export default class LevelContainer extends View {
 					}
 					blocksData.push({
 						...block.getData(),
-						x: block.x + block.getTypeData().hit.x,
-						y: block.y + block.getTypeData().hit.y,
+						x: block.x + block.collisionLeft(),
+						y: block.y + block.collisionTop(),
 					});
 				});
 				const levelData:ILevel = {

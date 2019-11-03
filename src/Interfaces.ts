@@ -1,7 +1,3 @@
-import Sprite = PIXI.Sprite;
-import Graphics = PIXI.Graphics;
-import Point = PIXI.Point;
-
 export interface ILevel {
 	types:IType[];
 	blocks:IBlock[];
@@ -10,14 +6,14 @@ export interface ILevel {
 export interface IType {
 	id:string;
 	image:string;
-	hit:IHit;
+	collision:ICollision;
 }
 
-export interface IHit {
-	x:number;
-	y:number;
-	width:number;
-	height:number;
+export interface ICollision {
+	left:number;
+	right:number;
+	top:number;
+	bottom:number;
 }
 
 export interface IBlock {

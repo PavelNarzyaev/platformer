@@ -26,18 +26,18 @@ export default class Block extends CollisionObject {
 	}
 
 	public collisionLeft():number {
-		return this._blockTypeData.hit.x;
+		return this._blockTypeData.collision.left;
 	}
 
 	public collisionRight():number {
-		return this._blockTypeData.hit.x + this._blockTypeData.hit.width;
+		return this._blockTypeData.collision.right;
 	}
 
 	public collisionTop():number {
-		return this._blockTypeData.hit.y;
+		return this._blockTypeData.collision.top;
 	}
 
 	public collisionBottom():number {
-		return this._blockTypeData.hit.y + this._blockTypeData.hit.height;
+		return this._blockTypeData.collision.bottom;
 	}
 }

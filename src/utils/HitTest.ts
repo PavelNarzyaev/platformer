@@ -1,5 +1,4 @@
 import CollisionObject from "../CollisionObject";
-import {IHit} from "../Interfaces";
 
 export default class HitTest {
 	public static horizontal(obj1:CollisionObject, obj2:CollisionObject):boolean {

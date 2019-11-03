@@ -1,5 +1,4 @@
 import Player from "./Player";
-import {IHit} from "./Interfaces";
 import HitTest from "./utils/HitTest";
 import Block from "./Block";
 
