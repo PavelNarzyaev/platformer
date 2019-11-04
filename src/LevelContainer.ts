@@ -146,8 +146,8 @@ export default class LevelContainer extends View {
 					}
 					blocksData.push({
 						...block.getData(),
-						x: block.x + block.collisionLeft(),
-						y: block.y + block.collisionTop(),
+						x: block.collisionLeft(),
+						y: block.collisionTop(),
 					});
 				});
 				const levelData:ILevel = {

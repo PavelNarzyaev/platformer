@@ -20,6 +20,7 @@ export default class Player extends CollisionObject {
 	constructor() {
 		super();
 		this.initSkin();
+		this.setLocalCollisionValues(10, 40, 10, 90);
 	}
 
 	private initSkin():void {
@@ -47,13 +48,13 @@ export default class Player extends CollisionObject {
 			switch (this._skinDirection) {
 				case Player.LEFT:
 					this.removeChild(this._skin);
-					this._skin = Sprite.fromImage(Player.LEFT_SKIN_NAME);
+					this._skin = Sprite.from(Player.LEFT_SKIN_NAME);
 					this.addChild(this._skin);
 					break;
 
 				case Player.RIGHT:
 					this.removeChild(this._skin);
-					this._skin = Sprite.fromImage(Player.RIGHT_SKIN_NAME);
+					this._skin = Sprite.from(Player.RIGHT_SKIN_NAME);
 					this.addChild(this._skin);
 					break;
 			}
@@ -62,21 +63,5 @@ export default class Player extends CollisionObject {
 
 	public getMovingDirection():symbol {
 		return this._movingDirection;
-	}
-
-	public collisionLeft():number {
-		return 10;
-	}
-
-	public collisionRight():number {
-		return 40;
-	}
-
-	public collisionTop():number {
-		return 10;
-	}
-
-	public collisionBottom():number {
-		return 90;
 	}
 }
