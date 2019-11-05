@@ -146,8 +146,8 @@ export default class LevelContainer extends View {
 		index:number,
 	):number {
 		let response:number = index;
-		for (let i:number = index + 1; i < array.length; i++) {
-			if (this.compareFn(array[index], array[i]) > 0) {
+		for (let i:number = 0; i < array.length; i++) {
+			if (i !== index && this.compareFn(array[index], array[i]) > 0) {
 				response = this.findMinObjectIndex(array, i);
 				break;
 			}
