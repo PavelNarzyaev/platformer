@@ -1,11 +1,11 @@
 import {View} from "./View";
-import Player from "./Player";
-import LevelContainer from "./LevelContainer";
+import Player from "./level/Player";
+import Level from "./level/Level";
 import Globals from "./Globals";
 import {pixiLoading} from "./Promises";
 
 export default class MainContainer extends View {
-	private _levelContainer:LevelContainer;
+	private _levelContainer:Level;
 	private _player:Player;
 
 	constructor() {
@@ -38,7 +38,7 @@ export default class MainContainer extends View {
 	}
 
 	private initLevelContainer():void {
-		this._levelContainer = new LevelContainer(
+		this._levelContainer = new Level(
 			this._player,
 			"levels/level_1.json"
 		);

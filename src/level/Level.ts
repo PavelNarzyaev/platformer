@@ -1,22 +1,22 @@
 import Player from "./Player";
-import {View} from "./View";
-import {pixiLoading, xhrJsonLoading} from "./Promises";
-import {addEvent, default as Globals} from "./Globals";
-import {POINTER_DOWN, POINTER_MOVE, POINTER_UP, POINTER_UP_OUTSIDE} from "./consts/PointerEvents";
+import {View} from "../View";
+import {pixiLoading, xhrJsonLoading} from "../Promises";
+import {addEvent, default as Globals} from "../Globals";
+import {POINTER_DOWN, POINTER_MOVE, POINTER_UP, POINTER_UP_OUTSIDE} from "../consts/PointerEvents";
 import InteractionEvent = PIXI.interaction.InteractionEvent;
 import Point = PIXI.Point;
-import {KEY_BACKQUOTE, KEY_DOWN, KEY_J, KEY_LEFT, KEY_RIGHT, KEY_UP} from "./consts/KeyboardCodes";
-import {IBlock, ILevel, IType} from "./Interfaces";
-import UnitsControl from "./UnitsControl";
+import {KEY_BACKQUOTE, KEY_DOWN, KEY_J, KEY_LEFT, KEY_RIGHT, KEY_UP} from "../consts/KeyboardCodes";
+import {IBlock, ILevel, IType} from "../Interfaces";
+import PlayerMover from "./PlayerMover";
 import Block from "./Block";
-import HitTest from "./utils/HitTest";
+import HitTest from "../utils/HitTest";
 import CollisionObject from "./CollisionObject";
 
-export default class LevelContainer extends View {
+export default class Level extends View {
 	private _pressedButtons:Map<string, boolean> = new Map<string, boolean>();
 	private _levelData:ILevel;
 	private _blocksTypesData:Map<string, IType> = new Map<string, IType>();
-	private _unitsControl:UnitsControl;
+	private _playerMover:PlayerMover;
 	private _blocks:Block[] = [];
 
 	constructor(
@@ -46,7 +46,7 @@ export default class LevelContainer extends View {
 							this.initBlocks();
 							this.initPlayer();
 							this.addKeyListeners();
-							this.initUnitsControl();
+							this.initPlayerMover();
 							this.launchTicker();
 						}
 					});
@@ -93,14 +93,14 @@ export default class LevelContainer extends View {
 		);
 	}
 
-	private initUnitsControl():void {
-		this._unitsControl = new UnitsControl(this._player, this._blocks);
+	private initPlayerMover():void {
+		this._playerMover = new PlayerMover(this._player, this._blocks);
 	}
 
 	private launchTicker():void {
 		Globals.pixiApp.ticker.add(() => {
 			this.jumping();
-			this._unitsControl.refresh();
+			this._playerMover.refresh();
 			this.sortChildren();
 		});
 	}

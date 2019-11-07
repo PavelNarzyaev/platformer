@@ -1,8 +1,8 @@
 import Player from "./Player";
-import HitTest from "./utils/HitTest";
+import HitTest from "../utils/HitTest";
 import Block from "./Block";
 
-export default class UnitsControl {
+export default class PlayerMover {
 	constructor(
 		private _player:Player,
 		private _blocks:Block[],

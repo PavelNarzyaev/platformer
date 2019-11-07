@@ -1,5 +1,5 @@
 import CollisionObject from "./CollisionObject";
-import {IBlock, ICollision, IType} from "./Interfaces";
+import {IBlock, ICollision, IType} from "../Interfaces";
 import Sprite = PIXI.Sprite;
 import Point = PIXI.Point;
 

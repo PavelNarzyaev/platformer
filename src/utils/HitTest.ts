@@ -1,4 +1,4 @@
-import CollisionObject from "../CollisionObject";
+import CollisionObject from "../level/CollisionObject";
 
 export default class HitTest {
 	public static horizontal(obj1:CollisionObject, obj2:CollisionObject):boolean {
