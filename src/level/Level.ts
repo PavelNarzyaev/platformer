@@ -9,14 +9,14 @@ import {KEY_BACKQUOTE, KEY_DOWN, KEY_J, KEY_LEFT, KEY_RIGHT, KEY_UP} from "../co
 import {IBlock, ILevel, IType} from "../Interfaces";
 import PlayerMover from "./PlayerMover";
 import Block from "./Block";
-import HitTest from "../utils/HitTest";
-import CollisionObject from "./CollisionObject";
+import CollisionObjectsSorter from "./CollisionObjectsSorter";
 
 export default class Level extends View {
 	private _pressedButtons:Map<string, boolean> = new Map<string, boolean>();
 	private _levelData:ILevel;
 	private _blocksTypesData:Map<string, IType> = new Map<string, IType>();
 	private _playerMover:PlayerMover;
+	private _collisionObjectsSorter:CollisionObjectsSorter;
 	private _blocks:Block[] = [];
 
 	constructor(
@@ -43,15 +43,20 @@ export default class Level extends View {
 						this._blocksTypesData.set(typeData.id, typeData);
 						loadedTypesImagesCounter++;
 						if (loadedTypesImagesCounter == typesNum) {
-							this.initBlocks();
-							this.initPlayer();
-							this.addKeyListeners();
-							this.initPlayerMover();
-							this.launchTicker();
+							this.onLoadingCompleted();
 						}
 					});
 				});
 			});
+	}
+
+	private onLoadingCompleted():void {
+		this.initBlocks();
+		this.initPlayer();
+		this.addKeyListeners();
+		this.initPlayerMover();
+		this.initCollisionObjectsSorter();
+		this.launchTicker();
 	}
 
 	private initPlayer():void {
@@ -97,11 +102,15 @@ export default class Level extends View {
 		this._playerMover = new PlayerMover(this._player, this._blocks);
 	}
 
+	private initCollisionObjectsSorter():void {
+		this._collisionObjectsSorter = new CollisionObjectsSorter(this);
+	}
+
 	private launchTicker():void {
 		Globals.pixiApp.ticker.add(() => {
 			this.jumping();
 			this._playerMover.refresh();
-			this.sortChildren();
+			this._collisionObjectsSorter.sort();
 		});
 	}
 
@@ -110,49 +119,6 @@ export default class Level extends View {
 			this._player.canJump = false;
 			this._player.speedY = Player.JUMP_SPEED;
 		}
-	}
-
-	private sortChildren():void {
-		this.children = this.mySort(this.children as CollisionObject[]);
-	}
-
-	private compareFn(a:CollisionObject, b:CollisionObject):number {
-		const hitH:boolean = HitTest.horizontal(a, b);
-		const hitV:boolean = HitTest.vertical(a, b);
-		const r:boolean = a.collisionLeft() >= b.collisionRight();
-		const t:boolean = a.collisionBottom() <= b.collisionTop();
-		if (hitV) {
-			return r ? 1 : -1;
-		} else if (hitH) {
-			return t ? 1 : -1;
-		} else {
-			return 0;
-		}
-	}
-
-	private mySort(array:CollisionObject[]):CollisionObject[] {
-		array = array.slice();
-		const newArray:CollisionObject[] = [];
-		while (array.length) {
-			const index:number = this.findMinObjectIndex(array, 0);
-			newArray.push(array[index]);
-			array.splice(index, 1);
-		}
-		return newArray;
-	}
-
-	private findMinObjectIndex(
-		array:CollisionObject[],
-		index:number,
-	):number {
-		let response:number = index;
-		for (let i:number = 0; i < array.length; i++) {
-			if (i !== index && this.compareFn(array[index], array[i]) > 0) {
-				response = this.findMinObjectIndex(array, i);
-				break;
-			}
-		}
-		return response;
 	}
 
 	private keyDownHandler(e:KeyboardEvent):void {
