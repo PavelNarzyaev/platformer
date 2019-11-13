@@ -1,6 +1,12 @@
 export interface ILevel {
+	stage:IStage;
 	types:IType[];
 	blocks:IBlock[];
+}
+
+export interface IStage {
+	width:number,
+	height:number,
 }
 
 export interface IType {

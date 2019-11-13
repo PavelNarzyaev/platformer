@@ -2,10 +2,12 @@ import {View} from "./View";
 import Player from "./level/Player";
 import Level from "./level/Level";
 import Globals from "./Globals";
-import {pixiLoading} from "./Promises";
+import {pixiLoading, xhrJsonLoading} from "./Promises";
+import {ILevel} from "./Interfaces";
 
 export default class MainContainer extends View {
 	private _levelContainer:Level;
+	private _levelData:ILevel;
 	private _player:Player;
 
 	constructor() {
@@ -18,12 +20,16 @@ export default class MainContainer extends View {
 	}
 
 	private loading():void {
-		pixiLoading(Player.LEFT_SKIN_NAME)
-			.then(() => {
-				pixiLoading(Player.RIGHT_SKIN_NAME)
+		xhrJsonLoading("levels/level_2.json")
+			.then((level:ILevel) => {
+				this._levelData = level;
+				pixiLoading(Player.LEFT_SKIN_NAME)
 					.then(() => {
-						this.completeLoadingHandler()
-					})
+						pixiLoading(Player.RIGHT_SKIN_NAME)
+							.then(() => {
+								this.completeLoadingHandler()
+							})
+					});
 			});
 	}
 
@@ -38,11 +44,8 @@ export default class MainContainer extends View {
 	}
 
 	private initLevelContainer():void {
-		this._levelContainer = new Level(
-			this._player,
-			"levels/level_2.json"
-		);
-		this._levelContainer.setSize(2000, 2000);
+		this._levelContainer = new Level(this._player, this._levelData);
+		this._levelContainer.setSize(this._levelData.stage.width, this._levelData.stage.height);
 		this.addChild(this._levelContainer);
 	}
 

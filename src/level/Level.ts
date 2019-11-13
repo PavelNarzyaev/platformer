@@ -1,6 +1,6 @@
 import Player from "./Player";
 import {View} from "../View";
-import {pixiLoading, xhrJsonLoading} from "../Promises";
+import {pixiLoading} from "../Promises";
 import {addEvent, default as Globals} from "../Globals";
 import {POINTER_DOWN, POINTER_MOVE, POINTER_UP, POINTER_UP_OUTSIDE} from "../consts/PointerEvents";
 import InteractionEvent = PIXI.interaction.InteractionEvent;
@@ -13,7 +13,6 @@ import CollisionObjectsSorter from "./CollisionObjectsSorter";
 
 export default class Level extends View {
 	private _pressedButtons:Map<string, boolean> = new Map<string, boolean>();
-	private _levelData:ILevel;
 	private _blocksTypesData:Map<string, IType> = new Map<string, IType>();
 	private _playerMover:PlayerMover;
 	private _collisionObjectsSorter:CollisionObjectsSorter;
@@ -21,7 +20,7 @@ export default class Level extends View {
 
 	constructor(
 		private _player:Player,
-		private _levelUrl:string,
+		private _levelData:ILevel
 	) {
 		super();
 	}
@@ -34,20 +33,16 @@ export default class Level extends View {
 	private loading():void {
 		let typesNum:number;
 		let loadedTypesImagesCounter:number = 0;
-		xhrJsonLoading(this._levelUrl)
-			.then((level:ILevel) => {
-				this._levelData = level;
-				typesNum = this._levelData.types.length;
-				this._levelData.types.forEach((typeData:IType) => {
-					pixiLoading(typeData.image).then(() => {
-						this._blocksTypesData.set(typeData.id, typeData);
-						loadedTypesImagesCounter++;
-						if (loadedTypesImagesCounter == typesNum) {
-							this.onLoadingCompleted();
-						}
-					});
-				});
+		typesNum = this._levelData.types.length;
+		this._levelData.types.forEach((typeData:IType) => {
+			pixiLoading(typeData.image).then(() => {
+				this._blocksTypesData.set(typeData.id, typeData);
+				loadedTypesImagesCounter++;
+				if (loadedTypesImagesCounter == typesNum) {
+					this.onLoadingCompleted();
+				}
 			});
+		});
 	}
 
 	private onLoadingCompleted():void {
@@ -163,6 +158,7 @@ export default class Level extends View {
 					});
 				});
 				const levelData:ILevel = {
+					...this._levelData,
 					types:typesData,
 					blocks:blocksData,
 				};
