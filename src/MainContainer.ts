@@ -6,7 +6,7 @@ import {pixiLoading, xhrJsonLoading} from "./Promises";
 import {ILevel} from "./Interfaces";
 
 export default class MainContainer extends View {
-	private _levelContainer:Level;
+	private _level:Level;
 	private _levelData:ILevel;
 	private _player:Player;
 
@@ -44,9 +44,9 @@ export default class MainContainer extends View {
 	}
 
 	private initLevelContainer():void {
-		this._levelContainer = new Level(this._player, this._levelData);
-		this._levelContainer.setSize(this._levelData.stage.width, this._levelData.stage.height);
-		this.addChild(this._levelContainer);
+		this._level = new Level(this._player, this._levelData);
+		this._level.setSize(this._levelData.stage.width, this._levelData.stage.height);
+		this.addChild(this._level);
 	}
 
 	private launchTicker():void {
@@ -56,14 +56,14 @@ export default class MainContainer extends View {
 	}
 
 	private moveLevelContainer():void {
-		const minX:number = (this._levelContainer.w - this.w) * -1;
+		const minX:number = (this._level.w - this.w) * -1;
 		const maxX:number = 0;
 		const calculatedX:number = ((this.w - this._player.width) / 2) - this._player.x;
-		this._levelContainer.x = Math.round(Math.min(maxX, Math.max(minX, calculatedX)));
+		this._level.x = Math.round(Math.min(maxX, Math.max(minX, calculatedX)));
 
-		const minY:number = (this._levelContainer.h - this.h) * -1;
+		const minY:number = (this._level.h - this.h) * -1;
 		const maxY:number = 0;
 		const calculatedY:number = ((this.h - this._player.height) / 2) - this._player.y;
-		this._levelContainer.y = Math.round(Math.min(maxY, Math.max(minY, calculatedY)));
+		this._level.y = Math.round(Math.min(maxY, Math.max(minY, calculatedY)));
 	}
 }
