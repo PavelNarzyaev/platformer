@@ -20,7 +20,7 @@ export default class MainContainer extends View {
 	}
 
 	private loading():void {
-		xhrJsonLoading("levels/level_2.json")
+		xhrJsonLoading("levels/level_1.json")
 			.then((level:ILevel) => {
 				this._levelData = level;
 				pixiLoading(Player.LEFT_SKIN_NAME)

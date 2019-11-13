@@ -31,17 +31,19 @@ export default class Level extends View {
 	}
 
 	private loading():void {
-		let typesNum:number;
-		let loadedTypesImagesCounter:number = 0;
-		typesNum = this._levelData.types.length;
+		let needLoadImagesCounter:number = this._levelData.types.length;
 		this._levelData.types.forEach((typeData:IType) => {
-			pixiLoading(typeData.image).then(() => {
-				this._blocksTypesData.set(typeData.id, typeData);
-				loadedTypesImagesCounter++;
-				if (loadedTypesImagesCounter == typesNum) {
-					this.onLoadingCompleted();
-				}
-			});
+			this._blocksTypesData.set(typeData.id, typeData);
+			if (typeData.image) {
+				pixiLoading(typeData.image).then(() => {
+					needLoadImagesCounter--;
+					if (!needLoadImagesCounter) {
+						this.onLoadingCompleted();
+					}
+				});
+			} else {
+				needLoadImagesCounter--;
+			}
 		});
 	}
 
