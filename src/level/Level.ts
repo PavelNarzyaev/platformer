@@ -5,7 +5,7 @@ import {addEvent, default as Globals} from "../Globals";
 import {POINTER_DOWN, POINTER_MOVE, POINTER_UP, POINTER_UP_OUTSIDE} from "../consts/PointerEvents";
 import InteractionEvent = PIXI.interaction.InteractionEvent;
 import Point = PIXI.Point;
-import {KEY_BACKQUOTE, KEY_DOWN, KEY_J, KEY_LEFT, KEY_RIGHT, KEY_UP} from "../consts/KeyboardCodes";
+import {KEY_BACKQUOTE, KEY_J, KEY_LEFT, KEY_RIGHT, KEY_UP} from "../consts/KeyboardCodes";
 import {IBlock, ILevel, IType} from "../Interfaces";
 import PlayerMover from "./PlayerMover";
 import Block from "./Block";
@@ -13,6 +13,7 @@ import CollisionObjectsSorter from "./CollisionObjectsSorter";
 
 export default class Level extends View {
 	private _pressedButtons:Map<string, boolean> = new Map<string, boolean>();
+	private _lastPressedDirectionButton:string;
 	private _blocksTypesData:Map<string, IType> = new Map<string, IType>();
 	private _playerMover:PlayerMover;
 	private _collisionObjectsSorter:CollisionObjectsSorter;
@@ -105,35 +106,49 @@ export default class Level extends View {
 
 	private launchTicker():void {
 		Globals.pixiApp.ticker.add(() => {
-			this.jumping();
+			this.refreshPlayerSpeedX();
+			this.refreshPlayerSpeedY();
 			this._playerMover.refresh();
 			this._collisionObjectsSorter.sort();
 		});
 	}
 
-	private jumping():void {
-		if (this._pressedButtons.get(KEY_UP) && this._player.canJump) {
-			this._player.canJump = false;
-			this._player.speedY = Player.JUMP_SPEED;
+	private refreshPlayerSpeedX():void {
+		if (this._pressedButtons.get(KEY_LEFT) || this._pressedButtons.get(KEY_RIGHT)) {
+			let direction:number;
+			if (this._pressedButtons.get(KEY_LEFT) && this._pressedButtons.get(KEY_RIGHT)) {
+				direction = this._lastPressedDirectionButton == KEY_LEFT ? -1 : 1;
+			} else {
+				direction = this._pressedButtons.get(KEY_LEFT) ? -1 : 1;
+			}
+			this._player.setSpeedX(Player.MOVING_SPEED * direction);
+		} else {
+			this._player.setSpeedX(0);
+		}
+	}
+
+	private refreshPlayerSpeedY():void {
+		if (this._pressedButtons.get(KEY_UP) && this._player.onTheFloor) {
+			this._player.setSpeedY(Player.JUMP_SPEED);
+		} else {
+			this._player.setSpeedY(this._player.getSpeedY() + Player.GRAVITY);
 		}
 	}
 
 	private keyDownHandler(e:KeyboardEvent):void {
 		switch (e.code) {
 			case KEY_LEFT:
-				if (!this._pressedButtons.get(e.code)) {
-					this._player.moveLeft();
-				}
-				break;
-
 			case KEY_RIGHT:
-				if (!this._pressedButtons.get(e.code)) {
-					this._player.moveRight();
-				}
+				this._lastPressedDirectionButton = e.code;
+				this._pressedButtons.set(e.code, true);
 				break;
+			case KEY_UP:
+				this._pressedButtons.set(e.code, true);
+		}
 
-			case KEY_BACKQUOTE:
-				if (!process.env.RELEASE) {
+		if (!process.env.RELEASE) {
+			switch (e.code) {
+				case KEY_BACKQUOTE:
 					Globals.developerMode.set(!Globals.developerMode.get());
 					if (Globals.developerMode.get()) {
 						this.enableDeveloperMode();
@@ -141,39 +156,12 @@ export default class Level extends View {
 						this.disableDeveloperMode();
 					}
 					console.log("Developer mode is " + (Globals.developerMode.get() ? "ON" : "OFF"));
-				}
-				break;
+					break;
 
-			case KEY_J:
-				const addedTypes:Set<string> = new Set<string>();
-				const typesData:IType[] = [];
-				const blocksData:IBlock[] = [];
-				this._blocks.forEach((block:Block) => {
-					if (!addedTypes.has(block.getTypeData().id)) {
-						typesData.push(block.getTypeData());
-						addedTypes.add(block.getTypeData().id);
-					}
-					blocksData.push({
-						...block.getData(),
-						x: block.collisionLeft(),
-						y: block.collisionTop(),
-					});
-				});
-				const levelData:ILevel = {
-					...this._levelData,
-					types:typesData,
-					blocks:blocksData,
-				};
-				console.log(JSON.stringify(levelData));
-				break;
-		}
-
-		switch (e.code) {
-			case KEY_UP:
-			case KEY_DOWN:
-			case KEY_LEFT:
-			case KEY_RIGHT:
-				this._pressedButtons.set(e.code, true);
+				case KEY_J:
+					this.printLevelJson();
+					break;
+			}
 		}
 	}
 
@@ -214,28 +202,32 @@ export default class Level extends View {
 		});
 	}
 
+	private printLevelJson():void {
+		const addedTypes:Set<string> = new Set<string>();
+		const typesData:IType[] = [];
+		const blocksData:IBlock[] = [];
+		this._blocks.forEach((block:Block) => {
+			if (!addedTypes.has(block.getTypeData().id)) {
+				typesData.push(block.getTypeData());
+				addedTypes.add(block.getTypeData().id);
+			}
+			blocksData.push({
+				...block.getData(),
+				x: block.collisionLeft(),
+				y: block.collisionTop(),
+			});
+		});
+		const levelData:ILevel = {
+			...this._levelData,
+			types:typesData,
+			blocks:blocksData,
+		};
+		console.log(JSON.stringify(levelData));
+	}
+
 	private keyUpHandler(e:KeyboardEvent):void {
 		switch (e.code) {
-			case KEY_LEFT:
-				if (this._pressedButtons.get(KEY_RIGHT)) {
-					this._player.moveRight();
-				} else {
-					this._player.stop();
-				}
-				break;
-
-			case KEY_RIGHT:
-				if (this._pressedButtons.get(KEY_LEFT)) {
-					this._player.moveLeft();
-				} else {
-					this._player.stop();
-				}
-				break;
-		}
-
-		switch (e.code) {
 			case KEY_UP:
-			case KEY_DOWN:
 			case KEY_LEFT:
 			case KEY_RIGHT:
 				this._pressedButtons.set(e.code, false);

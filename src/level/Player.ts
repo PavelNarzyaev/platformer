@@ -10,11 +10,11 @@ export default class Player extends CollisionObject {
 	public static readonly LEFT:symbol = Symbol();
 	public static readonly RIGHT:symbol = Symbol();
 
-	public speedY:number = 0;
-	public canJump:boolean = true;
+	public onTheFloor:boolean = false;
 
+	private _speedX:number = 0;
+	private _speedY:number = 0;
 	private _skin:Sprite;
-	private _movingDirection:symbol = null;
 	private _skinDirection:symbol = Player.RIGHT;
 
 	constructor() {
@@ -28,40 +28,39 @@ export default class Player extends CollisionObject {
 		this.addChild(this._skin);
 	}
 
-	public moveLeft():void {
-		this._movingDirection = Player.LEFT;
+	public setSpeedX(value:number):void {
+		this._speedX = value;
 		this.refreshSkinDirection();
 	}
 
-	public moveRight():void {
-		this._movingDirection = Player.RIGHT;
-		this.refreshSkinDirection();
+	public getSpeedX():number {
+		return this._speedX;
 	}
 
-	public stop():void {
-		this._movingDirection = null;
+	public setSpeedY(value:number):void {
+		this._speedY = value;
+	}
+
+	public getSpeedY():number {
+		return this._speedY;
 	}
 
 	private refreshSkinDirection():void {
-		if (this._skinDirection !== this._movingDirection) {
-			this._skinDirection = this._movingDirection;
-			switch (this._skinDirection) {
-				case Player.LEFT:
-					this.removeChild(this._skin);
-					this._skin = Sprite.from(Player.LEFT_SKIN_NAME);
-					this.addChild(this._skin);
-					break;
-
-				case Player.RIGHT:
-					this.removeChild(this._skin);
-					this._skin = Sprite.from(Player.RIGHT_SKIN_NAME);
-					this.addChild(this._skin);
-					break;
+		if (
+			this._skinDirection == Player.RIGHT && this._speedX < 0 ||
+			this._skinDirection == Player.LEFT && this._speedX > 0
+		) {
+			if (this._speedX > 0) {
+				this._skinDirection = Player.RIGHT;
+				this.removeChild(this._skin);
+				this._skin = Sprite.from(Player.RIGHT_SKIN_NAME);
+				this.addChild(this._skin);
+			} else {
+				this._skinDirection = Player.LEFT;
+				this.removeChild(this._skin);
+				this._skin = Sprite.from(Player.LEFT_SKIN_NAME);
+				this.addChild(this._skin);
 			}
 		}
-	}
-
-	public getMovingDirection():symbol {
-		return this._movingDirection;
 	}
 }

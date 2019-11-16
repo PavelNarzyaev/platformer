@@ -1,8 +1,12 @@
 import Player from "./Player";
 import HitTest from "../utils/HitTest";
 import Block from "./Block";
+import CollisionObject from "./CollisionObject";
 
 export default class PlayerMover {
+	private static readonly HORIZONTAL:symbol = Symbol();
+	private static readonly VERTICAL:symbol = Symbol();
+
 	constructor(
 		private _player:Player,
 		private _blocks:Block[],
@@ -10,90 +14,101 @@ export default class PlayerMover {
 	}
 
 	public refresh():void {
-		this.horizontalMoving();
-		this.verticalMoving();
-	}
-
-	private horizontalMoving():void {
-		let limitX:number;
-		let targetX:number;
-		switch (this._player.getMovingDirection()) {
-			case Player.LEFT:
-				targetX = Math.round(this._player.x - Player.MOVING_SPEED);
-				let maxLimitX:number = null;
-				this._blocks.forEach((block:Block) => {
-					limitX = block.collisionRight() - this._player.localCollisionLeft();
-					if (
-						this._player.x >= limitX &&
-						targetX < limitX &&
-						HitTest.vertical(this._player, block)
-					) {
-						maxLimitX = maxLimitX !== null ? Math.max(maxLimitX, limitX) : limitX;
+		if (this._player.getSpeedX() !== 0) {
+			this.move(
+				PlayerMover.HORIZONTAL,
+				this._player.getSpeedX()
+			);
+		}
+		if (this._player.getSpeedY() !== 0) {
+			this._player.onTheFloor = false;
+			this.move(
+				PlayerMover.VERTICAL,
+				this._player.getSpeedY(),
+				() => {
+					if (this._player.getSpeedY() > 0) {
+						this._player.onTheFloor = true;
 					}
-				});
-				this._player.x = maxLimitX !== null ? maxLimitX : targetX;
-				break;
-
-			case Player.RIGHT:
-				targetX = Math.round(this._player.x + Player.MOVING_SPEED);
-				let minLimitX:number = null;
-				this._blocks.forEach((block:Block) => {
-					limitX = block.collisionLeft() - this._player.localCollisionRight();
-					if (
-						this._player.x <= limitX &&
-						targetX > limitX &&
-						HitTest.vertical(this._player, block)
-					) {
-						minLimitX = minLimitX !== null ? Math.min(minLimitX, limitX) : limitX;
-					}
-				});
-				this._player.x = minLimitX !== null ? minLimitX : targetX;
-				break;
+					this._player.setSpeedY(0);
+				}
+			);
 		}
 	}
 
-	private verticalMoving():void {
-		this._player.speedY += Player.GRAVITY;
-		let limitY:number;
-		let targetY:number = this._player.y + this._player.speedY;
-		if (this._player.speedY > 0) {
-			let minLimitY:number = null;
-			this._blocks.forEach((block:Block) => {
-				limitY = block.collisionTop() - this._player.localCollisionBottom();
+	private move(
+		direction:symbol,
+		speed:number,
+		onLimitPosition:() => void = null
+	):void {
+		let limitPosition:number = null;
+		let targetPosition:number = this.getPosition(direction) + speed;
+		this._blocks.forEach((block:Block) => {
+			let blockLimitPosition:number = this.calculateBlockLimitPosition(block, direction, speed);
+			if (speed > 0) {
 				if (
-					this._player.y <= limitY &&
-					targetY > limitY &&
-					HitTest.horizontal(this._player, block)
+					this.getPosition(direction) <= blockLimitPosition &&
+					targetPosition > blockLimitPosition &&
+					this.hitTest(direction, this._player, block)
 				) {
-					minLimitY = minLimitY !== null ? Math.min(minLimitY, limitY) : limitY;
+					limitPosition = limitPosition !== null ? Math.min(limitPosition, blockLimitPosition) : blockLimitPosition;
 				}
-			});
-			if (minLimitY !== null) {
-				this._player.y = minLimitY;
-				this._player.canJump = true;
-				this._player.speedY = 0;
 			} else {
-				this._player.canJump = false;
-				this._player.y = targetY;
-			}
-		} else if (this._player.speedY < 0) {
-			let maxLimitY:number = null;
-			this._blocks.forEach((block:Block) => {
-				limitY = block.collisionBottom() - this._player.localCollisionTop();
 				if (
-					this._player.y >= limitY &&
-					targetY < limitY &&
-					HitTest.horizontal(this._player, block)
+					this.getPosition(direction) >= blockLimitPosition &&
+					targetPosition < blockLimitPosition &&
+					this.hitTest(direction, this._player, block)
 				) {
-					maxLimitY = maxLimitY !== null ? Math.max(maxLimitY, limitY) : limitY;
+					limitPosition = limitPosition !== null ? Math.max(limitPosition, blockLimitPosition) : blockLimitPosition;
 				}
-			});
-			if (maxLimitY !== null) {
-				this._player.y = maxLimitY;
-				this._player.speedY = 0;
-			} else {
-				this._player.y = targetY;
 			}
+		});
+		if (limitPosition !== null) {
+			this.setPosition(direction, limitPosition);
+			if (onLimitPosition !== null) {
+				onLimitPosition();
+			}
+		} else {
+			this.setPosition(direction, targetPosition);
+		}
+	}
+
+	private setPosition(direction:symbol, value:number):void {
+		if (direction == PlayerMover.HORIZONTAL) {
+			this._player.x = value;
+		} else {
+			this._player.y = value;
+		}
+	}
+
+	private getPosition(direction:symbol):number {
+		if (direction == PlayerMover.HORIZONTAL) {
+			return this._player.x;
+		} else {
+			return this._player.y;
+		}
+	}
+
+	private calculateBlockLimitPosition(block:CollisionObject, direction:symbol, speed:number):number {
+		if (direction == PlayerMover.HORIZONTAL) {
+			if (speed > 0) {
+				return block.collisionLeft() - this._player.localCollisionRight();
+			} else {
+				return block.collisionRight() - this._player.localCollisionLeft();
+			}
+		} else {
+			if (speed > 0) {
+				return block.collisionTop() - this._player.localCollisionBottom();
+			} else {
+				return block.collisionBottom() - this._player.localCollisionTop();
+			}
+		}
+	}
+
+	private hitTest(direction:symbol, object1:CollisionObject, object2:CollisionObject):boolean {
+		if (direction == PlayerMover.HORIZONTAL) {
+			return HitTest.vertical(object1, object2);
+		} else {
+			return HitTest.horizontal(object1, object2);
 		}
 	}
 }
