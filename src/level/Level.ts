@@ -10,6 +10,7 @@ import {IBlock, ILevel, IType} from "../Interfaces";
 import PlayerMover from "./PlayerMover";
 import Block from "./Block";
 import CollisionObjectsSorter from "./CollisionObjectsSorter";
+import HitTest from "./HitTest";
 
 export default class Level extends View {
 	private static readonly VERTICAL_BORDER_ID:string = "vertical_border";
@@ -174,7 +175,30 @@ export default class Level extends View {
 			this.refreshPlayerSpeedY();
 			this._playerMover.refresh();
 			this._collisionObjectsSorter.sort();
+			if (Globals.developerMode.get()) {
+				this.refreshCollisionRectangles();
+			}
 		});
+	}
+
+	private refreshCollisionRectangles():void {
+		for (let i:number = 0; i < this._blocks.length; i++) {
+			let hit:boolean = false;
+			for (let j:number = 0; j < this._blocks.length; j++) {
+				if (
+					i != j &&
+					HitTest.horizontal(this._blocks[i], this._blocks[j]) &&
+					HitTest.vertical(this._blocks[i], this._blocks[j])
+				) {
+					this._blocks[i].showCollisionRectangle(0xff0000);
+					hit = true;
+					break;
+				}
+			}
+			if (!hit) {
+				this._blocks[i].showCollisionRectangle(0x0000ff);
+			}
+		}
 	}
 
 	private refreshPlayerSpeedX():void {
@@ -230,10 +254,9 @@ export default class Level extends View {
 	}
 
 	private enableDeveloperMode():void {
-		this._player.showCollisionRectangle();
+		this._player.showCollisionRectangle(0x00ff00);
 		this._blocks.forEach((block:Block) => {
 			block.interactive = true;
-			block.showCollisionRectangle();
 			block.addListener(POINTER_DOWN, this.blockPointerDownHandler, this);
 		});
 	}

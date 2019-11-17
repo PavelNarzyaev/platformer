@@ -50,24 +50,26 @@ export default class CollisionObject extends Container {
 		return super.y;
 	}
 
-	public showCollisionRectangle():void {
+	public showCollisionRectangle(color:number = 0x0000ff):void {
 		if (!this._collisionRectangle) {
 			this._collisionRectangle = new Graphics();
-			this._collisionRectangle.beginFill(0x0000ff, .5);
-			this._collisionRectangle.drawRect(
-				this._localLeft,
-				this._localTop,
-				this._localRight - this._localLeft,
-				this._localBottom - this._localTop,
-			);
+		}
+		if (!this._collisionRectangle.parent) {
 			this.addChild(this._collisionRectangle);
 		}
+		this._collisionRectangle.clear();
+		this._collisionRectangle.beginFill(color, .5);
+		this._collisionRectangle.drawRect(
+			this._localLeft,
+			this._localTop,
+			this._localRight - this._localLeft,
+			this._localBottom - this._localTop,
+		);
 	}
 
 	public hideCollisionRectangle():void {
-		if (this._collisionRectangle) {
-			this.removeChild(this._collisionRectangle);
-			this._collisionRectangle = null;
+		if (this._collisionRectangle && this._collisionRectangle.parent) {
+			this._collisionRectangle.parent.removeChild(this._collisionRectangle);
 		}
 	}
 

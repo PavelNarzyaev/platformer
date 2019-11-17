@@ -35,8 +35,8 @@ export default class Block extends CollisionObject {
 		return this._blockTypeData;
 	}
 
-	public showCollisionRectangle():void {
-		super.showCollisionRectangle();
+	public showCollisionRectangle(color:number = 0x0000ff):void {
+		super.showCollisionRectangle(color);
 		if (this._sprite) {
 			this._sprite.alpha = .3;
 		}
