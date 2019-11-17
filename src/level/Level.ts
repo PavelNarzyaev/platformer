@@ -12,6 +12,8 @@ import Block from "./Block";
 import CollisionObjectsSorter from "./CollisionObjectsSorter";
 
 export default class Level extends View {
+	private static readonly VERTICAL_BORDER_ID:string = "vertical_border";
+	private static readonly HORIZONTAL_BORDER_ID:string = "horizontal_border";
 	private _pressedButtons:Map<string, boolean> = new Map<string, boolean>();
 	private _lastPressedDirectionButton:string;
 	private _blocksTypesData:Map<string, IType> = new Map<string, IType>();
@@ -28,13 +30,75 @@ export default class Level extends View {
 
 	protected init():void {
 		super.init();
+		this.addVerticalBorderType();
+		this.addHorizontalBorderType();
+		this.initTypes();
+		this.addVerticalBordersBlocks();
+		this.addHorizontalBordersBlocks();
 		this.loading();
+	}
+
+	private initTypes():void {
+		this._levelData.types.forEach((typeData:IType) => {
+			this._blocksTypesData.set(typeData.id, typeData);
+		});
+	}
+
+	private addVerticalBorderType():void {
+		this._levelData.types.push({
+			id:Level.VERTICAL_BORDER_ID,
+			image:null,
+			collision:{
+				left:0,
+				right:50,
+				top:0,
+				bottom:this._levelData.stage.height
+			}
+		});
+	}
+
+	private addHorizontalBorderType():void {
+		this._levelData.types.push({
+			id:Level.HORIZONTAL_BORDER_ID,
+			image:null,
+			collision:{
+				left:0,
+				right:this._levelData.stage.width,
+				top:0,
+				bottom:50,
+			}
+		});
+	}
+
+	private addVerticalBordersBlocks():void {
+		this._levelData.blocks.push({
+			type:Level.VERTICAL_BORDER_ID,
+			x:-this._blocksTypesData.get(Level.VERTICAL_BORDER_ID).collision.right,
+			y:0
+		});
+		this._levelData.blocks.push({
+			type:Level.VERTICAL_BORDER_ID,
+			x:this._levelData.stage.width,
+			y:0
+		})
+	}
+
+	private addHorizontalBordersBlocks():void {
+		this._levelData.blocks.push({
+			type:Level.HORIZONTAL_BORDER_ID,
+			x:0,
+			y:-this._blocksTypesData.get(Level.HORIZONTAL_BORDER_ID).collision.bottom
+		});
+		this._levelData.blocks.push({
+			type:Level.HORIZONTAL_BORDER_ID,
+			x:0,
+			y:this._levelData.stage.height
+		})
 	}
 
 	private loading():void {
 		let needLoadImagesCounter:number = this._levelData.types.length;
 		this._levelData.types.forEach((typeData:IType) => {
-			this._blocksTypesData.set(typeData.id, typeData);
 			if (typeData.image) {
 				pixiLoading(typeData.image).then(() => {
 					needLoadImagesCounter--;
@@ -207,15 +271,20 @@ export default class Level extends View {
 		const typesData:IType[] = [];
 		const blocksData:IBlock[] = [];
 		this._blocks.forEach((block:Block) => {
-			if (!addedTypes.has(block.getTypeData().id)) {
-				typesData.push(block.getTypeData());
-				addedTypes.add(block.getTypeData().id);
+			if (
+				block.getTypeData().id !== Level.HORIZONTAL_BORDER_ID &&
+				block.getTypeData().id !== Level.VERTICAL_BORDER_ID
+			) {
+				if (!addedTypes.has(block.getTypeData().id)) {
+					typesData.push(block.getTypeData());
+					addedTypes.add(block.getTypeData().id);
+				}
+				blocksData.push({
+					...block.getData(),
+					x: block.collisionLeft(),
+					y: block.collisionTop(),
+				});
 			}
-			blocksData.push({
-				...block.getData(),
-				x: block.collisionLeft(),
-				y: block.collisionTop(),
-			});
 		});
 		const levelData:ILevel = {
 			...this._levelData,
