@@ -35,6 +35,7 @@ export class Main {
 
 	private createPixiApp(canvasId:string):void {
 		const appConfig:PIXI.ApplicationOptions = {
+			antialias:true,
 			backgroundColor:0xffffff,
 			view:document.getElementById(canvasId) as HTMLCanvasElement,
 			// rounding resolution for escape troubles with invisible fonts on some Android devices
