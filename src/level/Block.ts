@@ -6,6 +6,7 @@ import Point = PIXI.Point;
 export default class Block extends CollisionObject {
 	public localDragPoint:Point;
 	private _sprite:Sprite;
+	private _hit:boolean = null;
 
 	constructor(
 		private _blockData:IBlock,
@@ -35,15 +36,19 @@ export default class Block extends CollisionObject {
 		return this._blockTypeData;
 	}
 
-	public showCollisionRectangle(color:number = 0x0000ff):void {
-		super.showCollisionRectangle(color);
-		if (this._sprite) {
-			this._sprite.alpha = .3;
+	public showBlockHit(value:boolean):void {
+		if (this._hit !== value) {
+			this._hit = value;
+			this.showCollisionRectangle(this._hit ? 0xff0000 : 0x0000ff);
+			if (this._sprite) {
+				this._sprite.alpha = .3;
+			}
 		}
 	}
 
-	public hideCollisionRectangle():void {
-		super.hideCollisionRectangle();
+	public hideBlockHit():void {
+		this.hideCollisionRectangle();
+		this._hit = null;
 		if (this._sprite) {
 			this._sprite.alpha = 1;
 		}

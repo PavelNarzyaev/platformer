@@ -190,14 +190,11 @@ export default class Level extends View {
 					HitTest.horizontal(this._blocks[i], this._blocks[j]) &&
 					HitTest.vertical(this._blocks[i], this._blocks[j])
 				) {
-					this._blocks[i].showCollisionRectangle(0xff0000);
 					hit = true;
 					break;
 				}
 			}
-			if (!hit) {
-				this._blocks[i].showCollisionRectangle(0x0000ff);
-			}
+			this._blocks[i].showBlockHit(hit);
 		}
 	}
 
@@ -288,7 +285,7 @@ export default class Level extends View {
 		this._player.hideCollisionRectangle();
 		this._blocks.forEach((block:Block) => {
 			block.interactive = false;
-			block.hideCollisionRectangle();
+			block.hideBlockHit();
 			block.removeAllListeners();
 		});
 	}
