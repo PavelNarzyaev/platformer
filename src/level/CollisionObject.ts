@@ -12,6 +12,8 @@ export default class CollisionObject extends Container {
 	private _collisionTop:number;
 	private _collisionBottom:number;
 
+	private _collisionRectangle:Graphics;
+
 	constructor() {
 		super();
 	}
@@ -49,15 +51,24 @@ export default class CollisionObject extends Container {
 	}
 
 	public showCollisionRectangle():void {
-		const graphics:Graphics = new Graphics();
-		graphics.beginFill(0xff0000, .5);
-		graphics.drawRect(
-			this._localLeft,
-			this._localTop,
-			this._localRight - this._localLeft,
-			this._localBottom - this._localTop,
-		);
-		this.addChild(graphics);
+		if (!this._collisionRectangle) {
+			this._collisionRectangle = new Graphics();
+			this._collisionRectangle.beginFill(0x0000ff, .5);
+			this._collisionRectangle.drawRect(
+				this._localLeft,
+				this._localTop,
+				this._localRight - this._localLeft,
+				this._localBottom - this._localTop,
+			);
+			this.addChild(this._collisionRectangle);
+		}
+	}
+
+	public hideCollisionRectangle():void {
+		if (this._collisionRectangle) {
+			this.removeChild(this._collisionRectangle);
+			this._collisionRectangle = null;
+		}
 	}
 
 	public collisionLeft():number {

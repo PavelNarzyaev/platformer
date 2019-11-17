@@ -5,6 +5,7 @@ import Point = PIXI.Point;
 
 export default class Block extends CollisionObject {
 	public localDragPoint:Point;
+	private _sprite:Sprite;
 
 	constructor(
 		private _blockData:IBlock,
@@ -12,13 +13,17 @@ export default class Block extends CollisionObject {
 	) {
 		super();
 
-		if (this._blockTypeData.image) {
-			this.addChild(Sprite.from(this._blockTypeData.image));
-		}
-
+		this.initSprite();
 		if (this._blockTypeData.collision) {
 			const collision:ICollision = this._blockTypeData.collision;
 			this.setLocalCollisionValues(collision.left, collision.right, collision.top, collision.bottom);
+		}
+	}
+
+	private initSprite():void {
+		if (this._blockTypeData.image) {
+			this._sprite = Sprite.from(this._blockTypeData.image);
+			this.addChild(this._sprite);
 		}
 	}
 
@@ -28,5 +33,19 @@ export default class Block extends CollisionObject {
 
 	public getTypeData():IType {
 		return this._blockTypeData;
+	}
+
+	public showCollisionRectangle():void {
+		super.showCollisionRectangle();
+		if (this._sprite) {
+			this._sprite.alpha = .3;
+		}
+	}
+
+	public hideCollisionRectangle():void {
+		super.hideCollisionRectangle();
+		if (this._sprite) {
+			this._sprite.alpha = 1;
+		}
 	}
 }

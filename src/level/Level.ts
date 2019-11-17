@@ -230,8 +230,10 @@ export default class Level extends View {
 	}
 
 	private enableDeveloperMode():void {
+		this._player.showCollisionRectangle();
 		this._blocks.forEach((block:Block) => {
 			block.interactive = true;
+			block.showCollisionRectangle();
 			block.addListener(POINTER_DOWN, this.blockPointerDownHandler, this);
 		});
 	}
@@ -260,8 +262,10 @@ export default class Level extends View {
 	}
 
 	private disableDeveloperMode():void {
+		this._player.hideCollisionRectangle();
 		this._blocks.forEach((block:Block) => {
 			block.interactive = false;
+			block.hideCollisionRectangle();
 			block.removeAllListeners();
 		});
 	}
