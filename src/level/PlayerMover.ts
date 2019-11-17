@@ -1,5 +1,5 @@
 import Player from "./Player";
-import HitTest from "../utils/HitTest";
+import HitTest from "./HitTest";
 import Block from "./Block";
 import CollisionObject from "./CollisionObject";
 

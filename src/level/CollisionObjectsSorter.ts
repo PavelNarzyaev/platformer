@@ -1,6 +1,6 @@
 import Container = PIXI.Container;
 import CollisionObject from "./CollisionObject";
-import HitTest from "../utils/HitTest";
+import HitTest from "./HitTest";
 
 export default class CollisionObjectsSorter {
 	constructor(
