@@ -1,5 +1,5 @@
-/.idea
-/.vscode
-
-/node_modules
-/out
+*.idea
+*.vscode
+*/DataBaseConfig.php
+*/node_modules
+*/out

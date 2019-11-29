@@ -1,0 +1,9 @@
+<?php
+
+class DataBaseConfig {
+	const DB_HOST = 'localhost';
+	const DB_USER = 'user';
+	const DB_PASSWORD = 'password';
+	const DB_NAME = 'platformer';
+	const DB_PORT = 3306;
+}

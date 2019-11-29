@@ -38,11 +38,12 @@ export function pixiLoading(url:string):Promise<any> {
 	});
 }
 
-export function xhrJsonLoading(url:string):Promise<any> {
+export function xhrJsonLoading(url:string, params:object):Promise<any> {
 	return new Promise<any>((resolve, reject) => {
 		const xhr:XMLHttpRequest = new XMLHttpRequest();
+		xhr.open("GET", url + "?" + stringifyRequest(params), true);
+		xhr.setRequestHeader("Accept", "text/plain");
 		xhr.responseType = "json";
-		xhr.open("GET", url, true);
 		xhr.onreadystatechange = () => {
 			if (xhr.readyState === 4) {
 				if (xhr.status === 200) {
@@ -54,4 +55,23 @@ export function xhrJsonLoading(url:string):Promise<any> {
 		};
 		xhr.send();
 	});
+
+	function stringifyRequest(data:any):string {
+		let response:string = "";
+		for (const dataKey in data) {
+			if (data.hasOwnProperty(dataKey) && data[dataKey] !== undefined) {
+				if (response !== "") {
+					response += "&";
+				}
+				let value:string;
+				if (typeof data[dataKey] === "object") {
+					value = JSON.stringify(data[dataKey]);
+				} else {
+					value = data[dataKey];
+				}
+				response += dataKey + "=" + value;
+			}
+		}
+		return response;
+	}
 }
