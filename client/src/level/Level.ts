@@ -176,7 +176,7 @@ export default class Level extends View {
 			this.refreshPlayerSpeedY();
 			this._playerMover.refresh();
 			this._collisionObjectsSorter.sort();
-			if (Globals.developerMode.get()) {
+			if (Globals.getDeveloperMode()) {
 				this.refreshCollisionRectangles();
 			}
 		});
@@ -235,13 +235,13 @@ export default class Level extends View {
 		if (!process.env.RELEASE) {
 			switch (e.code) {
 				case KEY_BACKQUOTE:
-					Globals.developerMode.set(!Globals.developerMode.get());
-					if (Globals.developerMode.get()) {
+					Globals.setDeveloperMode(!Globals.getDeveloperMode());
+					if (Globals.getDeveloperMode()) {
 						this.enableDeveloperMode();
 					} else {
 						this.disableDeveloperMode();
 					}
-					console.log("Developer mode is " + (Globals.developerMode.get() ? "ON" : "OFF"));
+					console.log("Developer mode is " + (Globals.getDeveloperMode() ? "ON" : "OFF"));
 					break;
 
 				case KEY_J:
