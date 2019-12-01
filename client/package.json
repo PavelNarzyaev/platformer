@@ -3,7 +3,12 @@
 	"description": "Platformer engine",
 	"version": "0.1.0",
 	"author": "Pavel Narzyaev",
+	"license": "UNLICENSED",
 	"main": "index.js",
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/PavelNarzyaev/platformer"
+	},
 	"scripts": {
 		"local-test": "webpack --watch --config webpack.config.js",
 		"local-release": "webpack --watch --config webpack.config.js --env.release",
