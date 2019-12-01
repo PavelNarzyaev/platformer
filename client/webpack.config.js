@@ -2,7 +2,7 @@ const path = require("path");
 const BrowserSyncPlugin = require("browser-sync-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
-const CleanWebpackPlugin = require("clean-webpack-plugin");
+const { CleanWebpackPlugin} = require("clean-webpack-plugin");
 const webpack = require("webpack");
 const CircularDependencyPlugin = require("circular-dependency-plugin");
 const pj = require(path.resolve(__dirname, "package.json"));
@@ -80,12 +80,7 @@ module.exports = env => {
 
 	if (!envServer) {
 		plugins.push(
-			new CleanWebpackPlugin(
-				outFolder,
-				{
-					verbose: false,
-				}
-			)
+			new CleanWebpackPlugin()
 		);
 	}
 
