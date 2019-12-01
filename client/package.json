@@ -33,6 +33,6 @@
 		"babel-polyfill": "^6.26.0",
 		"circular-dependency-plugin": "^5.0.2",
 		"pixi.js": "^5.0.4",
-		"webpack": "^4.25.1"
+		"webpack": "^4.41.2"
 	}
 }
