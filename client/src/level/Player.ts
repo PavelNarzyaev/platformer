@@ -15,7 +15,7 @@ export default class Player extends CollisionObject {
 	private _speedX:number = 0;
 	private _speedY:number = 0;
 	private _skin:Sprite;
-	private _skinDirection:symbol = Player.RIGHT;
+	private _skinDirection:symbol;
 
 	constructor() {
 		super();
@@ -24,8 +24,8 @@ export default class Player extends CollisionObject {
 	}
 
 	private initSkin():void {
-		this._skin = Sprite.fromImage(Player.RIGHT_SKIN_NAME);
-		this.addChild(this._skin);
+		this._skinDirection = Player.RIGHT;
+		this.refreshSkin();
 	}
 
 	public setSpeedX(value:number):void {
@@ -52,15 +52,28 @@ export default class Player extends CollisionObject {
 		) {
 			if (this._speedX > 0) {
 				this._skinDirection = Player.RIGHT;
-				this.removeChild(this._skin);
-				this._skin = Sprite.from(Player.RIGHT_SKIN_NAME);
-				this.addChild(this._skin);
 			} else {
 				this._skinDirection = Player.LEFT;
-				this.removeChild(this._skin);
-				this._skin = Sprite.from(Player.LEFT_SKIN_NAME);
-				this.addChild(this._skin);
 			}
+			this.refreshSkin();
+		}
+	}
+
+	private refreshSkin():void {
+		if (this._skin) {
+			this._skin.parent.removeChild(this._skin);
+		}
+		switch (this._skinDirection) {
+			case Player.RIGHT:
+				this._skin = Sprite.from(Player.RIGHT_SKIN_NAME);
+				break;
+
+			case Player.LEFT:
+				this._skin = Sprite.from(Player.LEFT_SKIN_NAME);
+				break;
+		}
+		if (this._skin) {
+			this.addChild(this._skin);
 		}
 	}
 }
