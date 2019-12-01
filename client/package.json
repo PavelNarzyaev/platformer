@@ -27,11 +27,11 @@
 		"ts-loader": "^4.4.2",
 		"ts-node": "^7.0.0",
 		"typescript": "^2.9.2",
-		"webpack-cli": "^3.3.10"
+		"webpack-cli": "^3.3.10",
+		"circular-dependency-plugin": "^5.2.0"
 	},
 	"dependencies": {
 		"babel-polyfill": "^6.26.0",
-		"circular-dependency-plugin": "^5.0.2",
 		"pixi.js": "^5.2.0",
 		"webpack": "^4.41.2"
 	}
