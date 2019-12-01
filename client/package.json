@@ -10,6 +10,7 @@
 		"url": "git://github.com/PavelNarzyaev/platformer"
 	},
 	"scripts": {
+		"npm-install": "npm --loglevel=error install",
 		"local-test": "webpack --watch --config webpack.config.js",
 		"local-release": "webpack --watch --config webpack.config.js --env.release",
 		"server-test": "webpack --watch --config webpack.config.js --env.server",
