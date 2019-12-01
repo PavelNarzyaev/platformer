@@ -63,9 +63,6 @@ module.exports = env => {
 		},
 		resolve: {
 			extensions: [".ts", ".js"],
-			alias: {
-				mobx: path.resolve(__dirname, "node_modules/mobx")
-			}
 		},
 	};
 	
