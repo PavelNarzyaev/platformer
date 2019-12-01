@@ -37,10 +37,6 @@ module.exports = env => {
 		module: {
 			rules: [{
 				test: /\.ts$/,
-				enforce: "pre",
-				loader: "tslint-loader",
-			}, {
-				test: /\.ts$/,
 				exclude: /node_modules/,
 				use: [{
 					loader: "babel-loader",
