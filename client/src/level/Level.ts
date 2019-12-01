@@ -1,7 +1,6 @@
 import Player from "./Player";
 import {View} from "../View";
 import {pixiLoading} from "../Promises";
-import {addEvent, default as Globals} from "../Globals";
 import {POINTER_DOWN, POINTER_MOVE, POINTER_UP, POINTER_UP_OUTSIDE} from "../consts/PointerEvents";
 import InteractionEvent = PIXI.interaction.InteractionEvent;
 import Point = PIXI.Point;
@@ -11,6 +10,8 @@ import PlayerMover from "./PlayerMover";
 import Block from "./Block";
 import CollisionObjectsSorter from "./CollisionObjectsSorter";
 import HitTest from "./HitTest";
+import BrowserEvents from "../utils/BrowserEvents";
+import Globals from "../Globals";
 
 export default class Level extends View {
 	private static readonly VERTICAL_BORDER_ID:string = "vertical_border";
@@ -144,17 +145,17 @@ export default class Level extends View {
 	}
 
 	private addKeyListeners():void {
-		addEvent(
+		BrowserEvents.addEvent(
 			window,
-			"keydown",
+			BrowserEvents.KEY_DOWN,
 			(e:KeyboardEvent) => {
 				this.keyDownHandler(e);
 			},
 		);
 
-		addEvent(
+		BrowserEvents.addEvent(
 			window,
-			"keyup",
+			BrowserEvents.KEY_UP,
 			(e:KeyboardEvent) => {
 				this.keyUpHandler(e);
 			},
