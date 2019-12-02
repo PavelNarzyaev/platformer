@@ -79,9 +79,9 @@ module.exports = env => {
 	);
 
 	if (!envServer) {
-		plugins.push(
-			new CleanWebpackPlugin()
-		);
+		let cleanWebpackPlugin = new CleanWebpackPlugin();
+		cleanWebpackPlugin.cleanStaleWebpackAssets = false;
+		plugins.push(cleanWebpackPlugin);
 	}
 
 	plugins.push(
