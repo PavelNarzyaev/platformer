@@ -2,9 +2,10 @@ import {View} from "./View";
 import Player from "./level/Player";
 import Level from "./level/Level";
 import Globals from "./Globals";
-import {pixiLoading, xhrJsonLoading} from "./Promises";
 import {ILevel} from "./Interfaces";
 import Server from "./Server";
+import XhrRequest from "./promises/XhrRequest";
+import PixiRequest from "./promises/PixiRequest";
 
 export default class MainContainer extends View {
 	private _level:Level;
@@ -21,15 +22,15 @@ export default class MainContainer extends View {
 	}
 
 	private loading():void {
-		xhrJsonLoading(Server.getLink(), {action:"get_level_data", id:"2"})
+		new XhrRequest().createPromise(Server.getLink(), {action:"get_level_data", id:"2"})
 			.then((level:ILevel) => {
 				this._levelData = level;
-				pixiLoading(Player.LEFT_SKIN_NAME)
+				new PixiRequest().createPromise(Player.LEFT_SKIN_NAME)
 					.then(() => {
-						pixiLoading(Player.RIGHT_SKIN_NAME)
+						new PixiRequest().createPromise(Player.RIGHT_SKIN_NAME)
 							.then(() => {
 								this.completeLoadingHandler()
-							})
+							});
 					});
 			});
 	}

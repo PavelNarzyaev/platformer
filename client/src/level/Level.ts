@@ -1,6 +1,5 @@
 import Player from "./Player";
 import {View} from "../View";
-import {pixiLoading} from "../Promises";
 import {POINTER_DOWN, POINTER_MOVE, POINTER_UP, POINTER_UP_OUTSIDE} from "../consts/PointerEvents";
 import InteractionEvent = PIXI.interaction.InteractionEvent;
 import Point = PIXI.Point;
@@ -12,6 +11,7 @@ import CollisionObjectsSorter from "./CollisionObjectsSorter";
 import HitTest from "./HitTest";
 import BrowserEvents from "../utils/BrowserEvents";
 import Globals from "../Globals";
+import PixiRequest from "../promises/PixiRequest";
 
 export default class Level extends View {
 	private static readonly VERTICAL_BORDER_ID:string = "vertical_border";
@@ -102,7 +102,7 @@ export default class Level extends View {
 		let needLoadImagesCounter:number = this._levelData.types.length;
 		this._levelData.types.forEach((typeData:IType) => {
 			if (typeData.image) {
-				pixiLoading(typeData.image).then(() => {
+				new PixiRequest().createPromise(typeData.image).then(() => {
 					needLoadImagesCounter--;
 					if (!needLoadImagesCounter) {
 						this.onLoadingCompleted();
