@@ -1,1 +1,0 @@
-export const SERVER_LINK = 'http://dolgofor.ru/platformer-server/';

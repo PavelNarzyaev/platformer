@@ -4,7 +4,7 @@
 * NPM
 
 ## Installation (Client)
-* Change variable SERVER_LINK in «client/src/consts/Server.ts»
+* Change variable SERVER_LINK in «client/src/Server.ts»
 * Change project name, description, version and author in «client/package.json»
 * Run command «npm run npm-install»
 * Run command «npm run server-release»

@@ -4,7 +4,7 @@ import Level from "./level/Level";
 import Globals from "./Globals";
 import {pixiLoading, xhrJsonLoading} from "./Promises";
 import {ILevel} from "./Interfaces";
-import {SERVER_LINK} from "./consts/Server";
+import Server from "./Server";
 
 export default class MainContainer extends View {
 	private _level:Level;
@@ -21,7 +21,7 @@ export default class MainContainer extends View {
 	}
 
 	private loading():void {
-		xhrJsonLoading(SERVER_LINK, {action:"get_level_data", id:"2"})
+		xhrJsonLoading(Server.getLink(), {action:"get_level_data", id:"2"})
 			.then((level:ILevel) => {
 				this._levelData = level;
 				pixiLoading(Player.LEFT_SKIN_NAME)
