@@ -3,8 +3,6 @@ import Player from "./level/Player";
 import Level from "./level/Level";
 import Globals from "./Globals";
 import {ILevel} from "./Interfaces";
-import Server from "./Server";
-import XhrRequest from "./promises/XhrRequest";
 import PixiRequest from "./promises/PixiRequest";
 import GetLevelDataRequest from "./promises/GetLevelDataRequest";
 
@@ -23,7 +21,7 @@ export default class MainContainer extends View {
 	}
 
 	private loading():void {
-		new GetLevelDataRequest({action:"get_level_data", id:"2"}).createPromise()
+		new GetLevelDataRequest("get_level_data", 2).createPromise()
 			.then((level:ILevel) => {
 				this._levelData = level;
 				new PixiRequest().createPromise(Player.LEFT_SKIN_NAME)

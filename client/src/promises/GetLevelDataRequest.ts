@@ -1,13 +1,12 @@
 import ServerRequest from "./ServerRequest";
+import {ILevel} from "../Interfaces";
 
 export default class GetLevelDataRequest extends ServerRequest {
-	constructor(
-		private requestData:any,
-	) {
-		super();
+	constructor(action:string, id:number) {
+		super({action, id});
 	}
 
-	protected getRequestData():any {
-		return this.requestData;
+	public createPromise():Promise<ILevel> {
+		return super.createPromise();
 	}
 }
