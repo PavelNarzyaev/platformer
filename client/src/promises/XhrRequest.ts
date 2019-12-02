@@ -1,10 +1,14 @@
 import AbstractRequest from "./AbstractRequest";
 
 export default class XhrRequest extends AbstractRequest {
-	public createPromise(url:string, params:object):Promise<any> {
+	public createPromise():Promise<any> {
 		return new Promise<any>((resolve, reject) => {
 			const xhr:XMLHttpRequest = new XMLHttpRequest();
-			xhr.open("GET", url + "?" + this.stringifyRequest(params), true);
+			xhr.open(
+				"GET",
+				this.getUrl() + "?" + this.stringifyRequestData(this.getRequestData()),
+				true
+			);
 			xhr.setRequestHeader("Accept", "text/plain");
 			xhr.responseType = "json";
 			xhr.onreadystatechange = () => {
@@ -20,7 +24,15 @@ export default class XhrRequest extends AbstractRequest {
 		});
 	}
 
-	private stringifyRequest(data:any):string {
+	protected getUrl():string {
+		return null;
+	}
+
+	protected getRequestData():string {
+		return null;
+	}
+
+	private stringifyRequestData(data:any):string {
 		let response:string = "";
 		for (const dataKey in data) {
 			if (data.hasOwnProperty(dataKey) && data[dataKey] !== undefined) {
