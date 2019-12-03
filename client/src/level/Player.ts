@@ -4,9 +4,9 @@ import CollisionObject from "./CollisionObject";
 export default class Player extends CollisionObject {
 	public static readonly LEFT_SKIN_NAME:string = "img/player_left.png";
 	public static readonly RIGHT_SKIN_NAME:string = "img/player_right.png";
-	public static readonly GRAVITY:number = 0.15;
-	public static readonly JUMP_SPEED:number = -8;
-	public static readonly MOVING_SPEED:number = 4;
+	public static readonly GRAVITY:number = 0.6;
+	public static readonly JUMP_SPEED:number = -16;
+	public static readonly MOVING_SPEED:number = 8;
 	public static readonly LEFT:symbol = Symbol();
 	public static readonly RIGHT:symbol = Symbol();
 
