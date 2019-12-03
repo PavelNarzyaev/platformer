@@ -242,26 +242,24 @@ export default class Level extends View {
 				this._lastPressedDirectionButton = e.code;
 				this._pressedButtons.set(e.code, true);
 				break;
+
 			case KEY_UP:
 				this._pressedButtons.set(e.code, true);
-		}
+				break;
 
-		if (!process.env.RELEASE) {
-			switch (e.code) {
-				case KEY_BACKQUOTE:
-					Globals.setDeveloperMode(!Globals.getDeveloperMode());
-					if (Globals.getDeveloperMode()) {
-						this.enableDeveloperMode();
-					} else {
-						this.disableDeveloperMode();
-					}
-					console.log("Developer mode is " + (Globals.getDeveloperMode() ? "ON" : "OFF"));
-					break;
+			case KEY_BACKQUOTE:
+				Globals.setDeveloperMode(!Globals.getDeveloperMode());
+				if (Globals.getDeveloperMode()) {
+					this.enableDeveloperMode();
+				} else {
+					this.disableDeveloperMode();
+				}
+				console.log("Developer mode is " + (Globals.getDeveloperMode() ? "ON" : "OFF"));
+				break;
 
-				case KEY_J:
-					this.printLevelJson();
-					break;
-			}
+			case KEY_J:
+				this.printLevelJson();
+				break;
 		}
 	}
 
