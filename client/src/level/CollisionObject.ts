@@ -2,6 +2,8 @@ import Container = PIXI.Container;
 import Graphics = PIXI.Graphics;
 
 export default class CollisionObject extends Container {
+	private static _objectCreationCounter:number = 0;
+
 	private _localLeft:number;
 	private _localRight:number;
 	private _localTop:number;
@@ -14,8 +16,11 @@ export default class CollisionObject extends Container {
 
 	private _collisionRectangle:Graphics;
 
+	private _id:number;
+
 	constructor() {
 		super();
+		this._id = CollisionObject._objectCreationCounter++;
 	}
 
 	public setLocalCollisionValues(
@@ -103,5 +108,13 @@ export default class CollisionObject extends Container {
 
 	public localCollisionBottom():number {
 		return this._localBottom;
+	}
+
+	public isVisible():boolean {
+		return true;
+	}
+
+	public getId():number {
+		return this._id;
 	}
 }

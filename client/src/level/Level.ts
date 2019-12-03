@@ -184,18 +184,21 @@ export default class Level extends View {
 
 	private refreshCollisionRectangles():void {
 		for (let i:number = 0; i < this._blocks.length; i++) {
-			let hit:boolean = false;
-			for (let j:number = 0; j < this._blocks.length; j++) {
-				if (
-					i != j &&
-					HitTest.horizontal(this._blocks[i], this._blocks[j]) &&
-					HitTest.vertical(this._blocks[i], this._blocks[j])
-				) {
-					hit = true;
-					break;
+			if (this._blocks[i].isVisible()) {
+				let hit: boolean = false;
+				for (let j: number = 0; j < this._blocks.length; j++) {
+					if (
+						this._blocks[j].isVisible() &&
+						i != j &&
+						HitTest.horizontal(this._blocks[i], this._blocks[j]) &&
+						HitTest.vertical(this._blocks[i], this._blocks[j])
+					) {
+						hit = true;
+						break;
+					}
 				}
+				this._blocks[i].showBlockHit(hit);
 			}
-			this._blocks[i].showBlockHit(hit);
 		}
 	}
 
