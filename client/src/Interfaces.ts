@@ -2,6 +2,7 @@ export interface ILevel {
 	stage:IStage;
 	types:IType[];
 	blocks:IBlock[];
+	[key:string]:any;
 }
 
 export interface IStage {
