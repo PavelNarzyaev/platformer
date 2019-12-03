@@ -204,7 +204,7 @@ export default class Level extends View {
 
 	private refreshPlayerSpeedX():void {
 		const slowdown:boolean = !this._pressedButtons.get(KEY_LEFT) && !this._pressedButtons.get(KEY_RIGHT);
-		if (!slowdown || this._player.getSpeedX() > .1) {
+		if (!slowdown || Math.abs(this._player.getSpeedX()) > .1) {
 			let direction: number;
 			if (this._pressedButtons.get(KEY_LEFT) && this._pressedButtons.get(KEY_RIGHT)) {
 				direction = this._lastPressedDirectionButton == KEY_LEFT ? -1 : 1;
@@ -216,8 +216,6 @@ export default class Level extends View {
 			let distance: number;
 			if (slowdown) {
 				distance = Math.abs(this._player.getSpeedX());
-			} else if (this._player.getSpeedX() == 0) {
-				distance = Player.MAX_MOVING_SPEED;
 			} else {
 				distance = Player.MAX_MOVING_SPEED - this._player.getSpeedX() * direction;
 			}
