@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1:3306
--- Время создания: Ноя 30 2019 г., 02:50
+-- Время создания: Дек 03 2019 г., 05:55
 -- Версия сервера: 5.7.25
 -- Версия PHP: 7.2.22
 
@@ -29,9 +29,9 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `levels` (
-  `id` int(11) NOT NULL,
-  `name` char(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `data` json NOT NULL
+  `id` int(11) DEFAULT NULL,
+  `name` char(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `data` json DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -39,27 +39,7 @@ CREATE TABLE `levels` (
 --
 
 INSERT INTO `levels` (`id`, `name`, `data`) VALUES
-(1, 'First level', '{\"stage\": {\"width\": 2000, \"height\": 2000}, \"types\": [{\"id\": \"sand\", \"image\": \"img/sandBlock.png\", \"collision\": {\"top\": 15, \"left\": 31, \"right\": 169, \"bottom\": 153}}, {\"id\": \"platform\", \"image\": \"img/platformBlock.png\", \"collision\": {\"top\": 15, \"left\": 31, \"right\": 539, \"bottom\": 153}}], \"blocks\": [{\"x\": 275, \"y\": 1705, \"type\": \"sand\"}, {\"x\": 470, \"y\": 1377, \"type\": \"sand\"}, {\"x\": 1025, \"y\": 1372, \"type\": \"sand\"}, {\"x\": 268, \"y\": 938, \"type\": \"sand\"}, {\"x\": 229, \"y\": 1087, \"type\": \"sand\"}, {\"x\": 575, \"y\": 987, \"type\": \"sand\"}, {\"x\": 1094, \"y\": 975, \"type\": \"sand\"}, {\"x\": 90, \"y\": 1391, \"type\": \"sand\"}, {\"x\": 747, \"y\": 1031, \"type\": \"sand\"}, {\"x\": 327, \"y\": 1377, \"type\": \"sand\"}, {\"x\": 1556, \"y\": 1033, \"type\": \"sand\"}, {\"x\": 31, \"y\": 1844, \"type\": \"sand\"}, {\"x\": 32, \"y\": 1103, \"type\": \"sand\"}, {\"x\": 1670, \"y\": 1654, \"type\": \"sand\"}, {\"x\": 1775, \"y\": 1471, \"type\": \"sand\"}, {\"x\": 421, \"y\": 1638, \"type\": \"sand\"}, {\"x\": 709, \"y\": 1638, \"type\": \"platform\"}, {\"x\": 619, \"y\": 1377, \"type\": \"sand\"}, {\"x\": 868, \"y\": 1413, \"type\": \"sand\"}, {\"x\": 1372, \"y\": 1676, \"type\": \"sand\"}, {\"x\": 564, \"y\": 1638, \"type\": \"sand\"}, {\"x\": 1224, \"y\": 1638, \"type\": \"sand\"}, {\"x\": 1182, \"y\": 1214, \"type\": \"sand\"}, {\"x\": 1017, \"y\": 1120, \"type\": \"sand\"}, {\"x\": 595, \"y\": 1138, \"type\": \"sand\"}, {\"x\": 1367, \"y\": 1524, \"type\": \"sand\"}, {\"x\": 328, \"y\": 1233, \"type\": \"sand\"}, {\"x\": 1431, \"y\": 1376, \"type\": \"sand\"}, {\"x\": 427, \"y\": 929, \"type\": \"sand\"}, {\"x\": 1587, \"y\": 1839, \"type\": \"sand\"}]}');
-
---
--- Индексы сохранённых таблиц
---
-
---
--- Индексы таблицы `levels`
---
-ALTER TABLE `levels`
-  ADD PRIMARY KEY (`id`);
-
---
--- AUTO_INCREMENT для сохранённых таблиц
---
-
---
--- AUTO_INCREMENT для таблицы `levels`
---
-ALTER TABLE `levels`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+(1, 'First level', '{\"stage\": {\"width\": 2000, \"height\": 2000}, \"types\": [{\"id\": \"graphite_cube\", \"image\": \"img/graphite_cube.png\", \"collision\": {\"top\": 15, \"left\": 29, \"right\": 157, \"bottom\": 142}}, {\"id\": \"metal_cube\", \"image\": \"img/metal_cube.png\", \"collision\": {\"top\": 15, \"left\": 29, \"right\": 157, \"bottom\": 142}}, {\"id\": \"wood_cube\", \"image\": \"img/wood_cube.png\", \"collision\": {\"top\": 15, \"left\": 29, \"right\": 157, \"bottom\": 142}}, {\"id\": \"graphite_horizontal\", \"image\": \"img/graphite_horizontal.png\", \"collision\": {\"top\": 15, \"left\": 29, \"right\": 471, \"bottom\": 142}}, {\"id\": \"metal_horizontal\", \"image\": \"img/metal_horizontal.png\", \"collision\": {\"top\": 15, \"left\": 29, \"right\": 471, \"bottom\": 142}}, {\"id\": \"wood_horizontal\", \"image\": \"img/wood_horizontal.png\", \"collision\": {\"top\": 15, \"left\": 29, \"right\": 471, \"bottom\": 142}}, {\"id\": \"graphite_vertical\", \"image\": \"img/graphite_vertical.png\", \"collision\": {\"top\": 15, \"left\": 29, \"right\": 157, \"bottom\": 456}}, {\"id\": \"metal_vertical\", \"image\": \"img/metal_vertical.png\", \"collision\": {\"top\": 15, \"left\": 29, \"right\": 157, \"bottom\": 456}}, {\"id\": \"wood_vertical\", \"image\": \"img/wood_vertical.png\", \"collision\": {\"top\": 15, \"left\": 29, \"right\": 157, \"bottom\": 456}}], \"blocks\": [{\"x\": 1098, \"y\": 1110, \"type\": \"graphite_cube\"}, {\"x\": 791, \"y\": 306, \"type\": \"graphite_cube\"}, {\"x\": 912, \"y\": 919, \"type\": \"graphite_cube\"}, {\"x\": 528, \"y\": 1552, \"type\": \"metal_cube\"}, {\"x\": 656, \"y\": 1552, \"type\": \"metal_cube\"}, {\"x\": 528, \"y\": 1425, \"type\": \"metal_cube\"}, {\"x\": 1226, \"y\": 1552, \"type\": \"wood_cube\"}, {\"x\": 305, \"y\": 301, \"type\": \"wood_cube\"}, {\"x\": 1098, \"y\": 714, \"type\": \"wood_cube\"}, {\"x\": 784, \"y\": 1237, \"type\": \"graphite_horizontal\"}, {\"x\": 784, \"y\": 1552, \"type\": \"metal_horizontal\"}, {\"x\": 0, \"y\": 1872, \"type\": \"wood_horizontal\"}, {\"x\": 442, \"y\": 1872, \"type\": \"wood_horizontal\"}, {\"x\": 884, \"y\": 1872, \"type\": \"wood_horizontal\"}, {\"x\": 1326, \"y\": 1872, \"type\": \"wood_horizontal\"}, {\"x\": 1557, \"y\": 1745, \"type\": \"wood_horizontal\"}, {\"x\": 784, \"y\": 605, \"type\": \"graphite_vertical\"}, {\"x\": 1226, \"y\": 923, \"type\": \"metal_vertical\"}, {\"x\": 1226, \"y\": 482, \"type\": \"wood_vertical\"}]}');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

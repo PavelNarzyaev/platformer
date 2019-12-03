@@ -21,7 +21,7 @@ export default class MainContainer extends View {
 	}
 
 	private loading():void {
-		new GetLevelDataRequest("get_level_data", 2).createPromise()
+		new GetLevelDataRequest("get_level_data", 1).createPromise()
 			.then((level:ILevel) => {
 				this._levelData = level;
 				new PixiRequest().createPromise(Player.LEFT_SKIN_NAME)
