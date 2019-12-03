@@ -17,7 +17,10 @@ export default class PlayerMover {
 		if (this._player.getSpeedX() !== 0) {
 			this.move(
 				PlayerMover.HORIZONTAL,
-				this._player.getSpeedX()
+				this._player.getSpeedX(),
+				() => {
+					this._player.setSpeedX(0)
+				},
 			);
 		}
 		if (this._player.getSpeedY() !== 0) {
@@ -30,7 +33,7 @@ export default class PlayerMover {
 						this._player.onTheFloor = true;
 					}
 					this._player.setSpeedY(0);
-				}
+				},
 			);
 		}
 	}

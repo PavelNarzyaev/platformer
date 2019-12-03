@@ -203,14 +203,25 @@ export default class Level extends View {
 	}
 
 	private refreshPlayerSpeedX():void {
-		if (this._pressedButtons.get(KEY_LEFT) || this._pressedButtons.get(KEY_RIGHT)) {
-			let direction:number;
+		const slowdown:boolean = !this._pressedButtons.get(KEY_LEFT) && !this._pressedButtons.get(KEY_RIGHT);
+		if (!slowdown || this._player.getSpeedX() > .1) {
+			let direction: number;
 			if (this._pressedButtons.get(KEY_LEFT) && this._pressedButtons.get(KEY_RIGHT)) {
 				direction = this._lastPressedDirectionButton == KEY_LEFT ? -1 : 1;
+			} else if (slowdown) {
+				direction = this._player.getSpeedX() > 0 ? -1 : 1;
 			} else {
 				direction = this._pressedButtons.get(KEY_LEFT) ? -1 : 1;
 			}
-			this._player.setSpeedX(Player.MOVING_SPEED * direction);
+			let distance: number;
+			if (slowdown) {
+				distance = Math.abs(this._player.getSpeedX());
+			} else if (this._player.getSpeedX() == 0) {
+				distance = Player.MAX_MOVING_SPEED;
+			} else {
+				distance = Player.MAX_MOVING_SPEED - this._player.getSpeedX() * direction;
+			}
+			this._player.setSpeedX(this._player.getSpeedX() + distance * direction * Player.MOVING_ACCELERATION_FACTOR);
 		} else {
 			this._player.setSpeedX(0);
 		}

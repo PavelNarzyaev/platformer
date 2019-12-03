@@ -6,7 +6,8 @@ export default class Player extends CollisionObject {
 	public static readonly RIGHT_SKIN_NAME:string = "img/player_right.png";
 	public static readonly GRAVITY:number = 0.6;
 	public static readonly JUMP_SPEED:number = -16;
-	public static readonly MOVING_SPEED:number = 8;
+	public static readonly MAX_MOVING_SPEED:number = 8;
+	public static readonly MOVING_ACCELERATION_FACTOR:number = .4;
 	public static readonly LEFT:symbol = Symbol();
 	public static readonly RIGHT:symbol = Symbol();
 
