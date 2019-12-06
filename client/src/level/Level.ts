@@ -12,6 +12,7 @@ import HitTest from "./HitTest";
 import BrowserEvents from "../utils/BrowserEvents";
 import Globals from "../Globals";
 import PixiRequest from "../promises/PixiRequest";
+import PromisesGroup from "../promises/PromisesGroup";
 
 export default class Level extends View {
 	private static readonly VERTICAL_BORDER_ID:string = "vertical_border";
@@ -99,20 +100,14 @@ export default class Level extends View {
 	}
 
 	private loading():void {
-		let needLoadImagesCounter:number = this._levelData.types.length;
+		const factories:(() => Promise<any>)[] = [];
 		this._levelData.types.forEach((typeData:IType) => {
 			if (typeData.image) {
-				new PixiRequest(typeData.image).createPromise()
-					.then(() => {
-						needLoadImagesCounter--;
-						if (!needLoadImagesCounter) {
-							this.onLoadingCompleted();
-						}
-					});
-			} else {
-				needLoadImagesCounter--;
+				factories.push(() => new PixiRequest(typeData.image).createPromise());
 			}
 		});
+		PromisesGroup.pack(factories)
+			.finally(() => { this.onLoadingCompleted(); });
 	}
 
 	private onLoadingCompleted():void {

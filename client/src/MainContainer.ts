@@ -5,6 +5,7 @@ import Globals from "./Globals";
 import {ILevel} from "./Interfaces";
 import PixiRequest from "./promises/PixiRequest";
 import GetLevelDataRequest from "./promises/GetLevelDataRequest";
+import PromisesGroup from "./promises/PromisesGroup";
 
 export default class MainContainer extends View {
 	private _level:Level;
@@ -22,14 +23,14 @@ export default class MainContainer extends View {
 
 	private loading():void {
 		new GetLevelDataRequest(1).createPromise()
-			.then((level:ILevel) => {
-				this._levelData = level;
-				new PixiRequest(Player.LEFT_SKIN_NAME).createPromise()
-					.then(() => {
-						new PixiRequest(Player.RIGHT_SKIN_NAME).createPromise()
-							.then(() => {
-								this.completeLoadingHandler();
-							});
+			.then((levelData:ILevel) => {
+				this._levelData = levelData;
+				PromisesGroup.pack([
+					() => new PixiRequest(Player.LEFT_SKIN_NAME).createPromise(),
+					() => new PixiRequest(Player.RIGHT_SKIN_NAME).createPromise(),
+				])
+					.finally(() => {
+						this.completeLoadingHandler();
 					});
 			});
 	}
