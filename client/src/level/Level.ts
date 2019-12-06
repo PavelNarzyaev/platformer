@@ -102,12 +102,13 @@ export default class Level extends View {
 		let needLoadImagesCounter:number = this._levelData.types.length;
 		this._levelData.types.forEach((typeData:IType) => {
 			if (typeData.image) {
-				new PixiRequest().createPromise(typeData.image).then(() => {
-					needLoadImagesCounter--;
-					if (!needLoadImagesCounter) {
-						this.onLoadingCompleted();
-					}
-				});
+				new PixiRequest(typeData.image).createPromise()
+					.then(() => {
+						needLoadImagesCounter--;
+						if (!needLoadImagesCounter) {
+							this.onLoadingCompleted();
+						}
+					});
 			} else {
 				needLoadImagesCounter--;
 			}

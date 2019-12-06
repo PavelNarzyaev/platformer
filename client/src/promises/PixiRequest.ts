@@ -5,7 +5,14 @@ import Resource = PIXI.loaders.Resource;
 import AbstractRequest from "./AbstractRequest";
 
 export default class PixiRequest extends AbstractRequest {
-	public createPromise(url:string):Promise<any> {
+	constructor(
+		private _url:string,
+	) {
+		super();
+		this._requestId = "PixiRequest::" + this._url;
+	}
+
+	protected requestPromiseFactory():Promise<any> {
 		return new Promise<any>((resolve, reject) => {
 			const loader:Loader = new Loader();
 
@@ -27,7 +34,7 @@ export default class PixiRequest extends AbstractRequest {
 				onErrorSignal.detach();
 				onCompleteSignal.detach();
 				if (success && !error) {
-					resolve(loader.resources[url].data);
+					resolve(loader.resources[this._url].data);
 				} else {
 					reject(errorMessage);
 				}
@@ -35,7 +42,7 @@ export default class PixiRequest extends AbstractRequest {
 			const loaderOptions:LoaderOptions = {};
 			loaderOptions.crossOrigin = false;
 			loaderOptions.loadType = Resource.LOAD_TYPE.XHR;
-			loader.add(url, url, loaderOptions);
+			loader.add(this._url, this._url, loaderOptions);
 			loader.load();
 		});
 	}

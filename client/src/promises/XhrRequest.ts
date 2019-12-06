@@ -2,17 +2,17 @@ import AbstractRequest from "./AbstractRequest";
 
 export default class XhrRequest extends AbstractRequest {
 	constructor(
-		protected requestData:object
+		private _requestData:object,
 	) {
 		super();
 	}
 
-	public createPromise():Promise<any> {
+	protected requestPromiseFactory():Promise<any> {
 		return new Promise<any>((resolve, reject) => {
 			const xhr:XMLHttpRequest = new XMLHttpRequest();
 			xhr.open(
 				"GET",
-				this.getUrl() + "?" + this.stringifyRequestData(this.requestData),
+				this.getUrl() + "?" + this.stringifyRequestData(this._requestData),
 				true
 			);
 			xhr.setRequestHeader("Accept", "text/plain");

@@ -21,14 +21,14 @@ export default class MainContainer extends View {
 	}
 
 	private loading():void {
-		new GetLevelDataRequest("get_level_data", 1).createPromise()
+		new GetLevelDataRequest(1).createPromise()
 			.then((level:ILevel) => {
 				this._levelData = level;
-				new PixiRequest().createPromise(Player.LEFT_SKIN_NAME)
+				new PixiRequest(Player.LEFT_SKIN_NAME).createPromise()
 					.then(() => {
-						new PixiRequest().createPromise(Player.RIGHT_SKIN_NAME)
+						new PixiRequest(Player.RIGHT_SKIN_NAME).createPromise()
 							.then(() => {
-								this.completeLoadingHandler()
+								this.completeLoadingHandler();
 							});
 					});
 			});
