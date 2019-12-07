@@ -53,19 +53,15 @@ export default class MainContainer extends View {
 
 	private launchTicker():void {
 		Globals.pixiApp.ticker.add(() => {
-			this.moveLevelContainer();
+			this._level.x = this.calculateLevelPosition(this.w, this._level.w, this._player.width, this._player.x);
+			this._level.y = this.calculateLevelPosition(this.h, this._level.h, this._player.height, this._player.y);
 		});
 	}
 
-	private moveLevelContainer():void {
-		const minX:number = (this._level.w - this.w) * -1;
-		const maxX:number = 0;
-		const calculatedX:number = ((this.w - this._player.width) / 2) - this._player.x;
-		this._level.x = Math.round(Math.min(maxX, Math.max(minX, calculatedX)));
-
-		const minY:number = (this._level.h - this.h) * -1;
-		const maxY:number = 0;
-		const calculatedY:number = ((this.h - this._player.height) / 2) - this._player.y;
-		this._level.y = Math.round(Math.min(maxY, Math.max(minY, calculatedY)));
+	private calculateLevelPosition(thisSize:number, levelSize:number, playerSize:number, playerPosition:number):number {
+		const minLevelPosition:number = thisSize - levelSize;
+		const maxLevelPosition:number = 0;
+		const calculatedLevelPosition:number = (thisSize - playerSize) / 2 - playerPosition;
+		return Math.round(Math.min(maxLevelPosition, Math.max(minLevelPosition, calculatedLevelPosition)));
 	}
 }
