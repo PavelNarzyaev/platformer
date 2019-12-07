@@ -78,27 +78,12 @@ export class Main {
 	}
 
 	private alignMainContainer():void {
-		let scale:number;
-		const windowRatio:number = this._windowSize.width / this._windowSize.height;
-		const containerRatio:number = this._mainContainer.w / this._mainContainer.h;
-		if (windowRatio !== containerRatio) {
-			if (windowRatio < containerRatio) {
-				scale = this._windowSize.width / this._mainContainer.w;
-				this._mainContainer.scale.x = this._mainContainer.scale.y = scale;
-				this._mainContainer.x = 0;
-				this._mainContainer.y = Math.round((this._windowSize.height - this._mainContainer.h * scale) / 2);
-			} else {
-				scale = this._windowSize.height / this._mainContainer.h;
-				this._mainContainer.scale.x = this._mainContainer.scale.y = scale;
-				this._mainContainer.x = Math.round((this._windowSize.width - this._mainContainer.w * scale) / 2);
-				this._mainContainer.y = 0;
-			}
-		} else {
-			scale = this._windowSize.width / this._mainContainer.w;
-			this._mainContainer.scale.x = this._mainContainer.scale.y = scale;
-			this._mainContainer.x = 0;
-			this._mainContainer.y = 0;
-		}
+		const scaleByWidth:number = this._windowSize.width / this._mainContainer.w;
+		const scaleByHeight:number = this._windowSize.height / this._mainContainer.h;
+		const scale:number = Math.min(scaleByWidth, scaleByHeight);
+		this._mainContainer.scale.x = this._mainContainer.scale.y = scale;
+		this._mainContainer.x = Math.round((this._windowSize.width - this._mainContainer.w * scale) / 2);
+		this._mainContainer.y = Math.round((this._windowSize.height - this._mainContainer.h * scale) / 2);
 	}
 
 	private alignOutOfBoundsCover():void {
