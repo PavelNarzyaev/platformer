@@ -1,33 +1,42 @@
 import AbstractRequest from "./AbstractRequest";
 
 export default class XhrRequest extends AbstractRequest {
-	constructor(
-		private _requestData:object,
-	) {
+	private _requestData:object = null;
+
+	constructor() {
 		super();
+	}
+
+	protected setRequestData(action:string, value:object = null):void {
+		this._requestData = {...{action}, ...value};
 	}
 
 	protected requestPromiseFactory():Promise<any> {
 		return new Promise<any>((resolve, reject) => {
 			const xhr:XMLHttpRequest = new XMLHttpRequest();
-			xhr.open(
-				"GET",
-				this.getUrl() + "?" + this.stringifyRequestData(this._requestData),
-				true
-			);
+			let url:string = this.getUrl();
+			if (this._requestData) {
+				url += "?" + this.stringifyRequestData(this._requestData);
+			}
+			xhr.open("GET", url,true);
 			xhr.setRequestHeader("Accept", "text/plain");
 			xhr.responseType = "json";
 			xhr.onreadystatechange = () => {
 				if (xhr.readyState === 4) {
 					if (xhr.status === 200) {
-						resolve(xhr.response);
+						this.parseRequest(xhr.response);
+						resolve();
 					} else {
-						reject(xhr.status);
+						// TODO: process error (xhr status)
+						reject();
 					}
 				}
 			};
 			xhr.send();
 		});
+	}
+
+	protected parseRequest(data:any):void {
 	}
 
 	protected getUrl():string {

@@ -13,6 +13,7 @@ import BrowserEvents from "../utils/BrowserEvents";
 import Globals from "../Globals";
 import PixiRequest from "../promises/PixiRequest";
 import PromisesGroup from "../promises/PromisesGroup";
+import LevelsManager from "../model/LevelsManager";
 
 export default class Level extends View {
 	private static readonly VERTICAL_BORDER_ID:string = "vertical_border";
@@ -23,12 +24,14 @@ export default class Level extends View {
 	private _playerMover:PlayerMover;
 	private _collisionObjectsSorter:CollisionObjectsSorter;
 	private _blocks:Block[] = [];
+	private _levelData:ILevel;
 
 	constructor(
 		private _player:Player,
-		private _levelData:ILevel
+		levelId:number,
 	) {
 		super();
+		this._levelData = LevelsManager.getLevel(levelId).data;
 	}
 
 	protected init():void {

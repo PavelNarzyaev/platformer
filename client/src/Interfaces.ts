@@ -1,3 +1,9 @@
+export interface ILevelInfo {
+	id:number;
+	name:string;
+	data?:ILevel;
+}
+
 export interface ILevel {
 	stage:IStage;
 	types:IType[];

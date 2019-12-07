@@ -2,15 +2,17 @@ import {View} from "./View";
 import Player from "./level/Player";
 import Level from "./level/Level";
 import Globals from "./Globals";
-import {ILevel} from "./Interfaces";
 import PixiRequest from "./promises/PixiRequest";
 import GetLevelDataRequest from "./promises/GetLevelDataRequest";
 import PromisesGroup from "./promises/PromisesGroup";
+import GetLevelsListRequest from "./promises/GetLevelsListRequest";
+import LevelsManager from "./model/LevelsManager";
+import {ILevelInfo} from "./Interfaces";
 
 export default class MainContainer extends View {
 	private _level:Level;
-	private _levelData:ILevel;
 	private _player:Player;
+	private _randomLevelId:number;
 
 	constructor() {
 		super();
@@ -22,17 +24,23 @@ export default class MainContainer extends View {
 	}
 
 	private loading():void {
-		new GetLevelDataRequest(1).createPromise()
-			.then((levelData:ILevel) => {
-				this._levelData = levelData;
-				PromisesGroup.pack([
-					() => new PixiRequest(Player.LEFT_SKIN_NAME).createPromise(),
-					() => new PixiRequest(Player.RIGHT_SKIN_NAME).createPromise(),
-				])
-					.finally(() => {
-						this.completeLoadingHandler();
-					});
+		PromisesGroup.pack([
+			() => this.loadingRandomLevel(),
+			// TODO: move into Level.ts
+			() => new PixiRequest(Player.LEFT_SKIN_NAME).createPromise(),
+			() => new PixiRequest(Player.RIGHT_SKIN_NAME).createPromise(),
+		])
+			.finally(() => {
+				this.completeLoadingHandler();
 			});
+	}
+
+	private async loadingRandomLevel():Promise<void> {
+		await new GetLevelsListRequest().createPromise();
+		if (LevelsManager.levelsNum()) {
+			this._randomLevelId = LevelsManager.getRandomLevelId();
+			await new GetLevelDataRequest(this._randomLevelId).createPromise();
+		}
 	}
 
 	private completeLoadingHandler():void {
@@ -46,15 +54,20 @@ export default class MainContainer extends View {
 	}
 
 	private initLevelContainer():void {
-		this._level = new Level(this._player, this._levelData);
-		this._level.setSize(this._levelData.stage.width, this._levelData.stage.height);
-		this.addChild(this._level);
+		const levelInfo:ILevelInfo = LevelsManager.getLevel(this._randomLevelId);
+		if (levelInfo && levelInfo.data) {
+			this._level = new Level(this._player, this._randomLevelId);
+			this._level.setSize(levelInfo.data.stage.width, levelInfo.data.stage.height);
+			this.addChild(this._level);
+		}
 	}
 
 	private launchTicker():void {
 		Globals.pixiApp.ticker.add(() => {
-			this._level.x = this.calculateLevelPosition(this.w, this._level.w, this._player.width, this._player.x);
-			this._level.y = this.calculateLevelPosition(this.h, this._level.h, this._player.height, this._player.y);
+			if (this._level) {
+				this._level.x = this.calculateLevelPosition(this.w, this._level.w, this._player.width, this._player.x);
+				this._level.y = this.calculateLevelPosition(this.h, this._level.h, this._player.height, this._player.y);
+			}
 		});
 	}
 
