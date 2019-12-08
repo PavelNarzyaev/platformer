@@ -1,8 +1,8 @@
 export default class PromisesGroup {
-	public static pack(factories:(() => Promise<any>)[]):Promise<void> {
+	public static pack(factories:(() => Promise<void>)[]):Promise<void> {
 		return new Promise<void>((resolve) => {
 			let completedCounter:number = 0;
-			factories.forEach((factory:() => Promise<any>) => {
+			factories.forEach((factory:() => Promise<void>) => {
 				factory()
 					.finally(() => {
 						completedCounter++;

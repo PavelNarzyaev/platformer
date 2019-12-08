@@ -3,9 +3,9 @@ export default class AbstractRequest {
 	private static readonly _executingUniqueRequests:Map<string, AbstractRequest> = new Map<string, AbstractRequest>();
 
 	protected _requestId:string = null;
-	private _requestPromise:Promise<any>;
+	private _requestPromise:Promise<void>;
 
-	public createPromise(forcedRequest:boolean = false):Promise<any> {
+	public createPromise(forcedRequest:boolean = false):Promise<void> {
 		if (this._requestId !== null) {
 			if (forcedRequest) {
 				return this.createUniqueRequestPromise();
@@ -26,42 +26,42 @@ export default class AbstractRequest {
 		}
 	}
 
-	public getRequestPromise():Promise<any> {
+	public getRequestPromise():Promise<void> {
 		return this._requestPromise;
 	}
 
-	private createEmptyPromise():Promise<any> {
-		return new Promise<any>((resolve) => {
+	private createEmptyPromise():Promise<void> {
+		return new Promise<void>((resolve) => {
 			resolve();
 		});
 	}
 
-	private createWaitPromise(uniqueRequest:AbstractRequest):Promise<any> {
-		return new Promise<any>((resolve, reject) => {
+	private createWaitPromise(uniqueRequest:AbstractRequest):Promise<void> {
+		return new Promise<void>((resolve, reject) => {
 			uniqueRequest.getRequestPromise()
-				.then((...params:any[]) => { resolve.apply(this, params); })
-				.catch((...params:any[]) => { reject.apply(this, params); });
+				.then(() => resolve())
+				.catch(() => reject());
 		});
 	}
 
-	private createUniqueRequestPromise():Promise<any> {
+	private createUniqueRequestPromise():Promise<void> {
 		AbstractRequest._executingUniqueRequests.set(this._requestId, this);
-		return new Promise<any>((resolve, reject) => {
+		return new Promise<void>((resolve, reject) => {
 			this._requestPromise = this.requestPromiseFactory();
 			this._requestPromise
-				.then((...params:any[]) => {
+				.then(() => {
 					AbstractRequest._executingUniqueRequests.delete(this._requestId);
 					AbstractRequest._successRequestsIds.add(this._requestId);
-					resolve.apply(this, params);
+					resolve();
 				})
-				.catch((...params:any[]) => {
+				.catch(() => {
 					AbstractRequest._executingUniqueRequests.delete(this._requestId);
-					reject.apply(this, params);
+					reject();
 				});
 		});
 	}
 
-	protected requestPromiseFactory():Promise<any> {
+	protected requestPromiseFactory():Promise<void> {
 		return null;
 	}
 }

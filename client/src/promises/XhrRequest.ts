@@ -11,8 +11,8 @@ export default class XhrRequest extends AbstractRequest {
 		this._requestData = {...{action}, ...value};
 	}
 
-	protected requestPromiseFactory():Promise<any> {
-		return new Promise<any>((resolve, reject) => {
+	protected requestPromiseFactory():Promise<void> {
+		return new Promise<void>((resolve, reject) => {
 			const xhr:XMLHttpRequest = new XMLHttpRequest();
 			let url:string = this.getUrl();
 			if (this._requestData) {

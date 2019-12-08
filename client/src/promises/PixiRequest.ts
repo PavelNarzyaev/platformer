@@ -12,8 +12,8 @@ export default class PixiRequest extends AbstractRequest {
 		this._requestId = "PixiRequest::" + this._url;
 	}
 
-	protected requestPromiseFactory():Promise<any> {
-		return new Promise<any>((resolve, reject) => {
+	protected requestPromiseFactory():Promise<void> {
+		return new Promise<void>((resolve, reject) => {
 			const loader:Loader = new Loader();
 
 			let success:boolean = false;
@@ -34,9 +34,10 @@ export default class PixiRequest extends AbstractRequest {
 				onErrorSignal.detach();
 				onCompleteSignal.detach();
 				if (success && !error) {
-					resolve(loader.resources[this._url].data);
+					resolve();
 				} else {
-					reject(errorMessage);
+					// TODO: process error (errorMessage)
+					reject();
 				}
 			});
 			const loaderOptions:LoaderOptions = {};
