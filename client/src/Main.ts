@@ -2,7 +2,7 @@ import Rectangle = PIXI.Rectangle;
 import Globals from "./Globals";
 import MainContainer from "./MainContainer";
 import Graphics = PIXI.Graphics;
-import BrowserEvents from "./utils/BrowserEvents";
+import WindowEvents from "./utils/WindowEvents";
 
 export class Main {
 	private _windowSize:Rectangle;
@@ -18,7 +18,7 @@ export class Main {
 		this._windowSize = new Rectangle();
 		this.initMainContainer();
 		this.initOutOfBoundsCover();
-		BrowserEvents.addEvent(window, BrowserEvents.RESIZE, () => { this.windowResizeHandler(); });
+		WindowEvents.add(WindowEvents.RESIZE, () => { this.windowResizeHandler(); });
 		this.refreshSize();
 		this.printWelcomeMessage();
 	}

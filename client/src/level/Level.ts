@@ -9,7 +9,7 @@ import PlayerMover from "./PlayerMover";
 import Block from "./Block";
 import CollisionObjectsSorter from "./CollisionObjectsSorter";
 import HitTest from "./HitTest";
-import BrowserEvents from "../utils/BrowserEvents";
+import WindowEvents from "../utils/WindowEvents";
 import Globals from "../Globals";
 import PixiRequest from "../promises/PixiRequest";
 import PromisesGroup from "../promises/PromisesGroup";
@@ -25,6 +25,8 @@ export default class Level extends View {
 	private _collisionObjectsSorter:CollisionObjectsSorter;
 	private _blocks:Block[] = [];
 	private _levelData:ILevel;
+	private _keyDownCallback:(...params:any[]) => void = null;
+	private _keyUpCallback:(...params:any[]) => void = null;
 
 	constructor(
 		private _player:Player,
@@ -144,21 +146,28 @@ export default class Level extends View {
 	}
 
 	private addKeyListeners():void {
-		BrowserEvents.addEvent(
-			window,
-			BrowserEvents.KEY_DOWN,
+		this._keyDownCallback = WindowEvents.add(
+			WindowEvents.KEY_DOWN,
 			(e:KeyboardEvent) => {
 				this.keyDownHandler(e);
 			},
 		);
 
-		BrowserEvents.addEvent(
-			window,
-			BrowserEvents.KEY_UP,
+		this._keyUpCallback = WindowEvents.add(
+			WindowEvents.KEY_UP,
 			(e:KeyboardEvent) => {
 				this.keyUpHandler(e);
 			},
 		);
+	}
+
+	private removeKeyListeners():void {
+		if (this._keyDownCallback) {
+			WindowEvents.remove(WindowEvents.KEY_DOWN, this._keyDownCallback);
+		}
+		if (this._keyUpCallback) {
+			WindowEvents.remove(WindowEvents.KEY_UP, this._keyUpCallback);
+		}
 	}
 
 	private initPlayerMover():void {
