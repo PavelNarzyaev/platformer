@@ -20,6 +20,7 @@ export default class Level extends View {
 	private static readonly HORIZONTAL_BORDER_ID:string = "horizontal_border";
 	private _pressedButtons:Map<string, boolean> = new Map<string, boolean>();
 	private _lastPressedDirectionButton:string;
+	private _jump:boolean = false;
 	private _blocksTypesData:Map<string, IType> = new Map<string, IType>();
 	private _playerMover:PlayerMover;
 	private _collisionObjectsSorter:CollisionObjectsSorter;
@@ -234,8 +235,11 @@ export default class Level extends View {
 	}
 
 	private refreshPlayerSpeedY():void {
-		if (this._pressedButtons.get(KEY_UP) && this._player.onTheFloor) {
+		if (this._player.onTheFloor && this._jump) {
+			this._jump = false;
 			this._player.setSpeedY(Player.JUMP_SPEED);
+		} else if (!this._player.onTheFloor && !this._pressedButtons.get(KEY_UP) && this._player.getSpeedY() < 0) {
+			this._player.setSpeedY(this._player.getSpeedY() + Math.min(-this._player.getSpeedY(), Player.JUMP_SLOWDOWN));
 		} else {
 			this._player.setSpeedY(this._player.getSpeedY() + Player.GRAVITY);
 		}
@@ -250,7 +254,10 @@ export default class Level extends View {
 				break;
 
 			case KEY_UP:
-				this._pressedButtons.set(e.code, true);
+				if (!this._pressedButtons.get(e.code)) {
+					this._jump = true;
+					this._pressedButtons.set(e.code, true);
+				}
 				break;
 
 			case KEY_BACKQUOTE:
@@ -338,6 +345,10 @@ export default class Level extends View {
 	}
 
 	private keyUpHandler(e:KeyboardEvent):void {
+		if (e.code == KEY_UP) {
+			this._jump = false;
+		}
+
 		switch (e.code) {
 			case KEY_UP:
 			case KEY_LEFT:
