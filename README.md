@@ -1,6 +1,7 @@
 # Platformer game
 
 ## Environment (Client)
+* Node.js
 * NPM
 
 ## Installation (Client)
