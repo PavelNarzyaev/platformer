@@ -109,8 +109,4 @@ export default class CollisionObject extends Container {
 	public localCollisionBottom():number {
 		return this._localBottom;
 	}
-
-	public getId():number {
-		return this._id;
-	}
 }
