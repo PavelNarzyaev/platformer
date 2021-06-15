@@ -20,12 +20,3 @@
 * Create MySQL database from «server/database/platformer.sql»
 * Rename file «server/DataBaseConfig.php.example» to «server/DataBaseConfig.php»
 * Change database connetion parameters in «server/DataBaseConfig.php»
-
-## Game
-You can launch it here: http://dolgofor.ru/platformer/
-
-## Controls
-* «left», «right» - moving
-* «up» - jump
-* «\`» - develop mode (in develop mode you can move blocks by mouse)
-* «j» - print new level data in browser console
