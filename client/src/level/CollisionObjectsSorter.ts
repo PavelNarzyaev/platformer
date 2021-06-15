@@ -26,14 +26,13 @@ export default class CollisionObjectsSorter {
 		array:CollisionObject[],
 		index:number,
 	):number {
-		let response:number = index;
 		for (let i:number = 0; i < array.length; i++) {
 			if (i !== index && this.firsObjectIndexIsBigger(array[index], array[i])) {
-				response = this.findMinObjectIndex(array, i);
+				index = this.findMinObjectIndex(array, i);
 				break;
 			}
 		}
-		return response;
+		return index;
 	}
 
 	private firsObjectIndexIsBigger(a:CollisionObject, b:CollisionObject):boolean {
