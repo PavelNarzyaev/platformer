@@ -27,7 +27,7 @@ export default class CollisionObjectsSorter {
 		index:number,
 	):number {
 		for (let i:number = 0; i < array.length; i++) {
-			if (i !== index && this.firsObjectIndexIsBigger(array[index], array[i])) {
+			if (i !== index && this.firstObjectIndexIsBigger(array[index], array[i])) {
 				index = this.findMinObjectIndex(array, i);
 				break;
 			}
@@ -35,7 +35,7 @@ export default class CollisionObjectsSorter {
 		return index;
 	}
 
-	private firsObjectIndexIsBigger(a:CollisionObject, b:CollisionObject):boolean {
+	private firstObjectIndexIsBigger(a:CollisionObject, b:CollisionObject):boolean {
 		const hitH: boolean = HitTest.horizontal(a, b);
 		const hitV: boolean = HitTest.vertical(a, b);
 		if (hitH === hitV) {
