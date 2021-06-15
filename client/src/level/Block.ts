@@ -53,8 +53,4 @@ export default class Block extends CollisionObject {
 			this._sprite.alpha = 1;
 		}
 	}
-
-	public isVisible():boolean {
-		return !!this._sprite;
-	}
 }

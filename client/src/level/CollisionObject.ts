@@ -110,10 +110,6 @@ export default class CollisionObject extends Container {
 		return this._localBottom;
 	}
 
-	public isVisible():boolean {
-		return true;
-	}
-
 	public getId():number {
 		return this._id;
 	}

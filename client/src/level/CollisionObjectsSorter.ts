@@ -37,20 +37,14 @@ export default class CollisionObjectsSorter {
 	}
 
 	private compareObjects(a:CollisionObject, b:CollisionObject):number {
-		if (a.isVisible() == true && b.isVisible() == true) {
-			const hitH: boolean = HitTest.horizontal(a, b);
-			const hitV: boolean = HitTest.vertical(a, b);
-			if (hitH === hitV) {
-				return 0;
-			} else if (hitV) {
-				return a.collisionLeft() >= b.collisionRight() ? 1 : -1;
-			} else {
-				return a.collisionBottom() <= b.collisionTop() ? 1 : -1;
-			}
-		} else if (a.isVisible() == false && b.isVisible() == false){
-			return a.getId() < b.getId() ? -1 : 1;
+		const hitH: boolean = HitTest.horizontal(a, b);
+		const hitV: boolean = HitTest.vertical(a, b);
+		if (hitH === hitV) {
+			return 0;
+		} else if (hitV) {
+			return a.collisionLeft() >= b.collisionRight() ? 1 : -1;
 		} else {
-			return a.isVisible() ? -1 : 1;
+			return a.collisionBottom() <= b.collisionTop() ? 1 : -1;
 		}
 	}
 }
