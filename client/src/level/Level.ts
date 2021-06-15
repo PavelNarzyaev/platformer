@@ -126,9 +126,10 @@ export default class Level extends View {
 			this.refreshPlayerSpeedX();
 			this.refreshPlayerSpeedY();
 			this._playerMover.refresh();
-			this._collisionObjectsSorter.sort();
 			if (Globals.getDeveloperMode()) {
 				this.refreshCollisionRectangles();
+			} else {
+				this._collisionObjectsSorter.sort();
 			}
 		});
 	}
