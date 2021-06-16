@@ -28,4 +28,8 @@ export default class LevelsManager {
 	public static getRandomLevelId():number {
 		return Random.choose.apply(null, LevelsManager._levelsIds);
 	}
+
+	public static getFirstLevelId():number {
+		return LevelsManager._levelsIds[0];
+	}
 }
