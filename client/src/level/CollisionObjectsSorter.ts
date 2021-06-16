@@ -35,12 +35,10 @@ export default class CollisionObjectsSorter {
 	private firstObjectIndexIsBigger(a:CollisionObject, b:CollisionObject):boolean {
 		if (HitTest.horizontal(a, b)) {
 			return a.collisionLeft() >= b.collisionRight();
+		} else if (HitTest.vertical(a, b)) {
+			return a.collisionBottom() <= b.collisionTop();
 		} else {
-			if (HitTest.vertical(a, b)) {
-				return a.collisionBottom() <= b.collisionTop();
-			} else {
-				return false;
-			}
+			return false;
 		}
 	}
 }
