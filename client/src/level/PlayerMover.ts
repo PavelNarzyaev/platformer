@@ -109,9 +109,9 @@ export default class PlayerMover {
 
 	private hitTest(direction:symbol, object1:CollisionObject, object2:CollisionObject):boolean {
 		if (direction == PlayerMover.HORIZONTAL) {
-			return HitTest.vertical(object1, object2);
-		} else {
 			return HitTest.horizontal(object1, object2);
+		} else {
+			return HitTest.vertical(object1, object2);
 		}
 	}
 }

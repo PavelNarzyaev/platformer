@@ -3,6 +3,8 @@ import CollisionObject from "./CollisionObject";
 import HitTest from "./HitTest";
 
 export default class CollisionObjectsSorter {
+	private _oldArray:CollisionObject[];
+
 	constructor(
 		private _collisionsLayer:Container
 	) {}
@@ -12,23 +14,18 @@ export default class CollisionObjectsSorter {
 	}
 
 	private mySort(children:CollisionObject[]):CollisionObject[] {
-		const oldArray:CollisionObject[] = children.slice();
+		this._oldArray = children.slice();
 		const newArray:CollisionObject[] = [];
-		while (oldArray.length) {
-			const index:number = this.findMinObjectIndex(oldArray, 0);
-			newArray.push(oldArray[index]);
-			oldArray.splice(index, 1);
+		while (this._oldArray.length) {
+			newArray.push(this._oldArray.splice(this.findMinObjectIndex(), 1)[0]);
 		}
 		return newArray;
 	}
 
-	private findMinObjectIndex(
-		array:CollisionObject[],
-		index:number,
-	):number {
-		for (let i:number = 0; i < array.length; i++) {
-			if (i !== index && this.firstObjectIndexIsBigger(array[index], array[i])) {
-				index = this.findMinObjectIndex(array, i);
+	private findMinObjectIndex(index:number = 0):number {
+		for (let i:number = 0; i < this._oldArray.length; i++) {
+			if (i !== index && this.firstObjectIndexIsBigger(this._oldArray[index], this._oldArray[i])) {
+				index = this.findMinObjectIndex(i);
 				break;
 			}
 		}
@@ -36,14 +33,14 @@ export default class CollisionObjectsSorter {
 	}
 
 	private firstObjectIndexIsBigger(a:CollisionObject, b:CollisionObject):boolean {
-		const hitH: boolean = HitTest.horizontal(a, b);
-		const hitV: boolean = HitTest.vertical(a, b);
-		if (hitH === hitV) {
-			return false;
-		} else if (hitV) {
+		if (HitTest.horizontal(a, b)) {
 			return a.collisionLeft() >= b.collisionRight();
 		} else {
-			return a.collisionBottom() <= b.collisionTop();
+			if (HitTest.vertical(a, b)) {
+				return a.collisionBottom() <= b.collisionTop();
+			} else {
+				return false;
+			}
 		}
 	}
 }

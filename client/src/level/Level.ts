@@ -83,13 +83,13 @@ export default class Level extends View {
 			i++;
 		}
 		this._sortTestResults.add(performance.now() - startTime);
-		if (this._sortTestResults.size == 10) {
+		if (this._sortTestResults.size == 30) {
 			window.clearInterval(this._timerId);
 			let totalTime:number = 0;
 			this._sortTestResults.forEach((sortTestResult:number) => {
 				totalTime += sortTestResult;
 			});
-			console.log("Sort time: " + (totalTime / this._sortTestResults.size)); // Result: 129
+			console.log("Sort time: " + (totalTime / this._sortTestResults.size)); // Result: 114
 		}
 	}
 
@@ -166,8 +166,8 @@ export default class Level extends View {
 			for (let j: number = 0; j < this._blocks.length; j++) {
 				if (
 					i != j &&
-					HitTest.horizontal(this._blocks[i], this._blocks[j]) &&
-					HitTest.vertical(this._blocks[i], this._blocks[j])
+					HitTest.vertical(this._blocks[i], this._blocks[j]) &&
+					HitTest.horizontal(this._blocks[i], this._blocks[j])
 				) {
 					hit = true;
 					break;
