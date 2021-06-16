@@ -66,13 +66,15 @@ export default class Level extends View {
 		this.addKeyListeners();
 		this.initPlayerMover();
 		this.initCollisionObjectsSorter();
-		// this.launchTicker();
+		this.launchTicker();
+		/*
 		this._timerId = window.setInterval(
 			() => {
 				this.sortTest();
 			},
 			300
 		);
+		*/
 	}
 
 	private sortTest():void {
