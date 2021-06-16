@@ -38,7 +38,8 @@ export default class MainContainer extends View {
 	private async loadingRandomLevel():Promise<void> {
 		await new GetLevelsListRequest().createPromise();
 		if (LevelsManager.levelsNum()) {
-			this._randomLevelId = LevelsManager.getRandomLevelId();
+			// this._randomLevelId = LevelsManager.getRandomLevelId();
+			this._randomLevelId = LevelsManager.getFirstLevelId();
 			await new GetLevelDataRequest(this._randomLevelId).createPromise();
 		}
 	}

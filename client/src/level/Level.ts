@@ -26,6 +26,8 @@ export default class Level extends View {
 	private _levelData:ILevel;
 	private _keyDownCallback:(...params:any[]) => void = null;
 	private _keyUpCallback:(...params:any[]) => void = null;
+	private _sortTestResults:Set<number> = new Set<number>();
+	private _timerId:number;
 
 	constructor(
 		private _player:Player,
@@ -64,7 +66,31 @@ export default class Level extends View {
 		this.addKeyListeners();
 		this.initPlayerMover();
 		this.initCollisionObjectsSorter();
-		this.launchTicker();
+		// this.launchTicker();
+		this._timerId = window.setInterval(
+			() => {
+				this.sortTest();
+			},
+			300
+		);
+	}
+
+	private sortTest():void {
+		let startTime:number = performance.now();
+		let i = 0;
+		while (i < 10000) {
+			this._collisionObjectsSorter.sort();
+			i++;
+		}
+		this._sortTestResults.add(performance.now() - startTime);
+		if (this._sortTestResults.size == 10) {
+			window.clearInterval(this._timerId);
+			let totalTime:number = 0;
+			this._sortTestResults.forEach((sortTestResult:number) => {
+				totalTime += sortTestResult;
+			});
+			console.log("Sort time: " + (totalTime / this._sortTestResults.size)); // Result: 129
+		}
 	}
 
 	private initPlayer():void {
@@ -251,6 +277,7 @@ export default class Level extends View {
 		this._player.hideCollisionRectangle();
 		this._blocks.forEach((block:Block) => {
 			block.interactive = false;
+			block.hideBlockHit();
 			block.hideBlockHit();
 			block.removeAllListeners();
 		});
