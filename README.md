@@ -2,7 +2,6 @@
 
 ## Environment (Client)
 * Node.js
-* NPM
 
 ## Installation (Client)
 * Change variable SERVER_LINK in «client/src/Server.ts»
