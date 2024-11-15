@@ -43,7 +43,7 @@ export default class MainContainer extends View {
 	}
 
 	private initLevelContainer():void {
-		const levelId:number = 1;
+		const levelId:number = Math.ceil(Math.random() * 2);
 		const levelInfo:ILevelInfo = LevelsManager.getLevel(levelId);
 		if (levelInfo && levelInfo.data) {
 			this._level = new Level(this._player, levelId);
