@@ -21,15 +21,23 @@ export default class MainContainer extends View {
 	}
 
 	private loading():void {
-		LevelsManager.init();
 		PromisesGroup.pack([
-			// TODO: move into Level.ts
+			() => this.loadLevel("level1.json"),
+			() => this.loadLevel("level2.json"),
 			() => new PixiRequest(Player.LEFT_SKIN_NAME).createPromise(),
 			() => new PixiRequest(Player.RIGHT_SKIN_NAME).createPromise(),
 		])
 			.finally(() => {
 				this.completeLoadingHandler();
 			});
+	}
+
+	private async loadLevel(fileName: string): Promise<void> {
+		const request = new PixiRequest("levels/" + fileName);
+		await request.createPromise();
+		const levelData = request.getResult();
+		LevelsManager.addLevel(levelData);
+		LevelsManager.addLevelData(levelData.id, levelData.data);
 	}
 
 	private completeLoadingHandler():void {

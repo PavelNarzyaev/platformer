@@ -90,6 +90,7 @@ module.exports = env => {
 			{from:assetsFolder + "/style.css"},
 			{from:assetsFolder + "/favicon.ico"},
 			{from:assetsFolder + "/js", to:"js", toType:"dir"},
+			{from:assetsFolder + "/levels", to:"levels", toType:"dir"},
 			{from:assetsFolder + "/img/files", to:"img", toType:"dir"},
 			{from:assetsFolder + "/sounds/files", to: "sounds", toType: "dir"},
 		],
